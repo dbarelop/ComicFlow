@@ -52,9 +52,9 @@ static CGImageRef _CreateCGImageFromWebPData(NSData* data) {
     return NULL;
   }
 #if __USE_RGBA_WEBP__
-  size_t rowBytes = 4 * config.input.width;
+  size_t rowBytes = (size_t) (4 * config.input.width);
 #else
-  size_t rowBytes = 3 * config.input.width;
+  size_t rowBytes = (size_t) (3 * config.input.width);
 #endif
   if (rowBytes % 16) {
     rowBytes = ((rowBytes / 16) + 1) * 16;
@@ -89,7 +89,7 @@ static CGImageRef _CreateCGImageFromWebPData(NSData* data) {
 #if __USE_RGBA_WEBP__
   CGImageRef imageRef = CGImageCreate(config.input.width, config.input.height, 8, 32, rowBytes, colorspace, kCGImageAlphaNoneSkipLast, provider, NULL, true, kCGRenderingIntentDefault);
 #else
-  CGImageRef imageRef = CGImageCreate(config.input.width, config.input.height, 8, 24, rowBytes, colorspace, kCGImageAlphaNone, provider, NULL, true, kCGRenderingIntentDefault);
+  CGImageRef imageRef = CGImageCreate((size_t) config.input.width, (size_t) config.input.height, 8, 24, rowBytes, colorspace, (CGBitmapInfo) kCGImageAlphaNone, provider, NULL, true, kCGRenderingIntentDefault);
 #endif
   CGColorSpaceRelease(colorspace);
   CGDataProviderRelease(provider);

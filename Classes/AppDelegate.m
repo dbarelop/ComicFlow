@@ -31,14 +31,14 @@
 + (void) initialize {
   // Setup initial user defaults
   NSMutableDictionary* defaults = [[NSMutableDictionary alloc] init];
-  [defaults setObject:[NSNumber numberWithInteger:0] forKey:kDefaultKey_LibraryVersion];
-  [defaults setObject:[NSNumber numberWithBool:NO] forKey:kDefaultKey_ScreenDimmed];
-  [defaults setObject:[NSNumber numberWithDouble:0.0] forKey:kDefaultKey_RootTimestamp];
-  [defaults setObject:[NSNumber numberWithInteger:0] forKey:kDefaultKey_RootScrolling];
-  [defaults setObject:[NSNumber numberWithInteger:0] forKey:kDefaultKey_CurrentCollection];
-  [defaults setObject:[NSNumber numberWithInteger:0] forKey:kDefaultKey_CurrentComic];
-  [defaults setObject:[NSNumber numberWithInteger:kSortingMode_ByStatus] forKey:kDefaultKey_SortingMode];
-  [defaults setObject:[NSNumber numberWithInteger:0] forKey:kDefaultKey_LaunchCount];
+  defaults[kDefaultKey_LibraryVersion] = @0;
+  defaults[kDefaultKey_ScreenDimmed] = @NO;
+  defaults[kDefaultKey_RootTimestamp] = @0.0;
+  defaults[kDefaultKey_RootScrolling] = @0;
+  defaults[kDefaultKey_CurrentCollection] = @0;
+  defaults[kDefaultKey_CurrentComic] = @0;
+  defaults[kDefaultKey_SortingMode] = @(kSortingMode_ByStatus);
+  defaults[kDefaultKey_LaunchCount] = @0;
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
   [defaults release];
   
@@ -162,7 +162,7 @@
     _dimmingWindow.hidden = NO;
   }
   [UIView animateWithDuration:(1.0 / 3.0) animations:^{
-    _dimmingWindow.alpha = flag ? kScreenDimmingOpacity : 0.0;
+    _dimmingWindow.alpha = (CGFloat) (flag ? kScreenDimmingOpacity : 0.0);
   } completion:^(BOOL finished) {
     if (!flag) {
       _dimmingWindow.hidden = YES;

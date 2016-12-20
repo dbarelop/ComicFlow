@@ -13,7 +13,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#import <QuartzCore/QuartzCore.h>
 #if TARGET_IPHONE_SIMULATOR
 #import <unistd.h>
 #endif
@@ -121,7 +120,7 @@
         _type = kComicType_PDF;
         CGPDFDocumentRef document = CGPDFDocumentCreateWithURL((CFURLRef)[NSURL fileURLWithPath:_path]);
         if (document) {
-          _contents = [[NSNumber alloc] initWithInteger:CGPDFDocumentGetNumberOfPages(document)];
+          _contents = [[NSNumber alloc] initWithInteger:(NSInteger) CGPDFDocumentGetNumberOfPages(document)];
           CGPDFDocumentRelease(document);
         }
       } else if (![extension caseInsensitiveCompare:@"zip"] || ![extension caseInsensitiveCompare:@"cbz"] || ![extension caseInsensitiveCompare:@"rar"] || ![extension caseInsensitiveCompare:@"cbr"]) {
@@ -189,12 +188,12 @@
 }
 
 - (void) documentView:(DocumentView*)documentView willShowPageView:(UIView*)view {
-  CGFloat maxPageSize = kMaxPageSize * [[UIScreen mainScreen] scale];
+  CGFloat maxPageSize = (CGFloat) (kMaxPageSize * [[UIScreen mainScreen] scale]);
   CGImageRef imageRef = NULL;
   if (_type == kComicType_PDF) {
     CGPDFDocumentRef document = CGPDFDocumentCreateWithURL((CFURLRef)[NSURL fileURLWithPath:_path]);  // Don't keep CGPDFDocument around as it caches pages content heavily
     if (document) {
-      CGPDFPageRef page = CGPDFDocumentGetPage(document, view.tag);
+      CGPDFPageRef page = CGPDFDocumentGetPage(document, (size_t) view.tag);
       if (page) {
         imageRef = CreateCGImageFromPDFPage(page, CGSizeMake(maxPageSize, maxPageSize), NO);
       }
@@ -314,7 +313,7 @@
   
   NSMutableArray* array = [[NSMutableArray alloc] init];
   if (_type == kComicType_PDF) {
-    NSUInteger count = [(NSNumber*)_contents integerValue];
+    NSUInteger count = (NSUInteger) [(NSNumber*)_contents integerValue];
     for (NSUInteger i = 0; i < count; ++i) {
       ComicPageView* view = [[ComicPageView alloc] initWithTapTarget:self action:@selector(_tapAction:)];
       view.tag = i + 1;
@@ -334,7 +333,7 @@
       }
     }
   }
-  [_documentView setPageViews:array initialPageIndex:MAX(_comic.status, 0)];
+  [_documentView setPageViews:array initialPageIndex:(NSUInteger) MAX(_comic.status, 0)];
   _navigationControl.numberOfPages = array.count;
   _navigationControl.numberOfMarkers = MIN(array.count, 50);
   _navigationControl.currentPage = _documentView.selectedPageIndex;

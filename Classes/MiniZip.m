@@ -81,7 +81,7 @@ static voidpf _OpenFunction(voidpf opaque, const char* filename, int mode) {
 static uLong _ReadFunction(voidpf opaque, voidpf stream, void* buf, uLong size) {
   MiniZip* zip = (MiniZip*)opaque;
   const void* bytes = zip->_data.bytes;
-  long length = zip->_data.length;
+  long length = (long) zip->_data.length;
   size = MIN(size, length - zip->_offset);
   if (size) {
     bcopy((char*)bytes + zip->_offset, buf, size);
@@ -97,9 +97,9 @@ static long _TellFuntion(voidpf opaque, voidpf stream) {
 
 static long _SeekFunction(voidpf opaque, voidpf stream, uLong offset, int origin) {
   MiniZip* zip = (MiniZip*)opaque;
-  long length = zip->_data.length;
+  long length = (long) zip->_data.length;
   switch (origin) {
-    
+
     case ZLIB_FILEFUNC_SEEK_CUR:
       zip->_offset += offset;
       break;
@@ -111,7 +111,8 @@ static long _SeekFunction(voidpf opaque, voidpf stream, uLong offset, int origin
     case ZLIB_FILEFUNC_SEEK_SET:
       zip->_offset = offset;
       break;
-    
+
+    default:break;
   }
   return (zip->_offset >= 0) && (zip->_offset <= length) ? 0 : -1;
 }
@@ -273,7 +274,7 @@ static int _ErrorFunction(voidpf opaque, voidpf stream) {
             unsigned char buffer[kZipExtractionBufferSize];
             int read = unzReadCurrentFile(_unzFile, buffer, kZipExtractionBufferSize);
             if (read > 0) {
-              if (fwrite(buffer, read, 1, outFile) != 1) {
+              if (fwrite(buffer, (size_t) read, 1, outFile) != 1) {
                  XLOG_ERROR(@"Failed writing \"%@\" from ZIP archive", path);
                  success = NO;
                  break;
@@ -351,7 +352,7 @@ static int _ErrorFunction(voidpf opaque, voidpf stream) {
           unsigned char buffer[kZipExtractionBufferSize];
           int read = unzReadCurrentFile(_unzFile, buffer, kZipExtractionBufferSize);
           if (read > 0) {
-            if (fwrite(buffer, read, 1, outFile) != 1) {
+            if (fwrite(buffer, (size_t) read, 1, outFile) != 1) {
                XLOG_ERROR(@"Failed writing \"%@\" from ZIP archive", path);
                success = NO;
                break;

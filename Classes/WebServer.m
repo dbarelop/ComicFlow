@@ -46,7 +46,7 @@
 
 + (void) initialize {
   NSMutableDictionary* defaults = [[NSMutableDictionary alloc] init];
-  [defaults setObject:[NSNumber numberWithInteger:kWebServerType_Website] forKey:kDefaultKey_ServerType];
+  defaults[kDefaultKey_ServerType] = @(kWebServerType_Website);
   [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
   [defaults release];
 }
@@ -71,7 +71,7 @@
     }
     if (type != kWebServerType_Off) {
       NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-      NSArray* fileExtensions = [NSArray arrayWithObjects:@"pdf", @"zip", @"cbz", @"rar", @"cbr", nil];
+      NSArray* fileExtensions = @[@"pdf", @"zip", @"cbz", @"rar", @"cbr"];
       if (type == kWebServerType_Website) {
         _webServer = [[WebsiteServer alloc] initWithUploadDirectory:documentsPath];
         [(WebsiteServer*)_webServer setAllowedFileExtensions:fileExtensions];
@@ -91,20 +91,20 @@
 #if TARGET_IPHONE_SIMULATOR
         [options setObject:[NSNumber numberWithInteger:8080] forKey:GCDWebServerOption_Port];
 #else
-        [options setObject:[NSNumber numberWithInteger:80] forKey:GCDWebServerOption_Port];
+        options[GCDWebServerOption_Port] = @80;
 #endif
-        [options setObject:@"" forKey:GCDWebServerOption_BonjourName];
+        options[GCDWebServerOption_BonjourName] = @"";
         NSString* name = [NSString stringWithFormat:NSLocalizedString(@"SERVER_NAME_FORMAT", nil),
                           [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
                           [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-        [options setObject:name forKey:GCDWebServerOption_ServerName];
-        [options setObject:[NSNumber numberWithDouble:kDisconnectLatency] forKey:GCDWebServerOption_ConnectedStateCoalescingInterval];
+        options[GCDWebServerOption_ServerName] = name;
+        options[GCDWebServerOption_ConnectedStateCoalescingInterval] = @kDisconnectLatency;
         NSError* error = nil;
         BOOL success = [_webServer startWithOptions:options error:&error];
 #if !TARGET_IPHONE_SIMULATOR
         if (!success && [error.domain isEqualToString:NSPOSIXErrorDomain] && (error.code == 48)) {
           XLOG_WARNING(@"Server port 80 is busy, trying alternate port 8080");
-          [options setObject:@8080 forKey:GCDWebServerOption_Port];
+          options[GCDWebServerOption_Port] = @8080;
           success = [_webServer startWithOptions:options error:&error];
         }
 #endif

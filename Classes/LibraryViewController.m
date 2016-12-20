@@ -13,15 +13,10 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#import <unistd.h>
-#import <QuartzCore/QuartzCore.h>
-
 #import "LibraryViewController.h"
 #import "ComicViewController.h"
 #import "AppDelegate.h"
 #import "Defaults.h"
-#import "Extensions_Foundation.h"
-#import "Extensions_UIKit.h"
 #import "NetReachability.h"
 
 #define kAppStoreAppID @"409290355"
@@ -187,11 +182,11 @@ static void __DisplayQueueCallBack(void* info) {
     
     DatabaseSQLRowID collectionID = (int)[[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_CurrentCollection];
     if (collectionID) {
-      _currentCollection = [[[LibraryConnection mainConnection] fetchObjectOfClass:[Collection class] withSQLRowID:collectionID] retain];
+      _currentCollection = (Collection *) [[[LibraryConnection mainConnection] fetchObjectOfClass:[Collection class] withSQLRowID:collectionID] retain];
     }
     DatabaseSQLRowID comicID = (int)[[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_CurrentComic];
     if (comicID) {
-      _currentComic = [[[LibraryConnection mainConnection] fetchObjectOfClass:[Comic class] withSQLRowID:comicID] retain];
+      _currentComic = (Comic *) [[[LibraryConnection mainConnection] fetchObjectOfClass:[Comic class] withSQLRowID:comicID] retain];
     }
     
 #if __DISPLAY_THUMBNAILS_IN_BACKGROUND__
@@ -338,7 +333,7 @@ static void __DisplayQueueCallBack(void* info) {
 - (void) _press:(UILongPressGestureRecognizer*)recognizer {
   if (recognizer.state == UIGestureRecognizerStateBegan) {
     [_selectedItem release];
-    _selectedItem = [[_gridView itemAtLocation:[recognizer locationInView:_gridView] view:NULL] retain];
+    _selectedItem = (DatabaseObject *) [[_gridView itemAtLocation:[recognizer locationInView:_gridView] view:NULL] retain];
     if (_selectedItem) {
       NSInteger status = [(id)_selectedItem status];
       NSMutableArray* items = [[NSMutableArray alloc] init];
@@ -353,11 +348,9 @@ static void __DisplayQueueCallBack(void* info) {
           [items addObject:item];
           [item release];
         }
-        if (1) {
-          UIMenuItem* item = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"DELETE", nil) action:@selector(_delete:)];
-          [items addObject:item];
-          [item release];
-        }
+        UIMenuItem* item = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"DELETE", nil) action:@selector(_delete:)];
+        [items addObject:item];
+        [item release];
       } else {
         if (status != 0) {
           UIMenuItem* item = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"MARK_ALL_READ", nil) action:@selector(_setRead:)];
@@ -369,11 +362,9 @@ static void __DisplayQueueCallBack(void* info) {
           [items addObject:item];
           [item release];
         }
-        if (1) {
-          UIMenuItem* item = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"DELETE_ALL", nil) action:@selector(_delete:)];
-          [items addObject:item];
-          [item release];
-        }
+        UIMenuItem* item = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"DELETE_ALL", nil) action:@selector(_delete:)];
+        [items addObject:item];
+        [item release];
       }
       CGPoint location = [recognizer locationInView:_gridView];
       [[UIMenuController sharedMenuController] setMenuItems:items];
@@ -401,13 +392,10 @@ static void __DisplayQueueCallBack(void* info) {
   [pressRecognizer release];
   
   UINavigationItem* item = [_navigationBar.items objectAtIndex:0];
-  UIBarButtonItem* rightButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil)
-                                                                  style:UIBarButtonItemStyleBordered
-                                                                 target:self
-                                                                 action:@selector(_toggleMenu:)];
-  item.rightBarButtonItem = rightButton;
-  [rightButton release];
-  
+  UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_toggleMenu:)];
+  item.rightBarButtonItems = @[settingsButton];
+  [settingsButton release];
+
   UIViewController* viewController = [[UIViewController alloc] init];
   viewController.view = _menuView;
   _menuController = [[UIPopoverController alloc] initWithContentViewController:viewController];
@@ -518,12 +506,9 @@ static void __DisplayQueueCallBack(void* info) {
   }
   if (collection) {
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:collection.name];
-    UIBarButtonItem* button = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil)
-                                                               style:UIBarButtonItemStyleBordered
-                                                              target:self
-                                                              action:@selector(_toggleMenu:)];
-    item.rightBarButtonItem = button;
-    [button release];
+    UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_toggleMenu:)];
+    item.rightBarButtonItems = @[settingsButton];
+    [settingsButton release];
     [barItems addObject:item];
     [item release];
   }
@@ -616,7 +601,7 @@ static void __DisplayQueueCallBack(void* info) {
 
   // Launch screens are used on iOS 8 and later
   if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_8_0) {
-    if (_launched == NO) {
+    if (!_launched) {
       _launchView = [[UIImageView alloc] initWithFrame:self.view.bounds];
       _launchView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
       NSString* path = [[NSBundle mainBundle] pathForResource:(UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? @"Default-Landscape" : @"Default-Portrait") ofType:@"png"];
@@ -640,7 +625,7 @@ static void __DisplayQueueCallBack(void* info) {
   } else {
     appURL = [NSString stringWithFormat:kiOSAppStoreURLFormat, kAppStoreAppID];
   }
-  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appURL]];
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appURL] options:@{} completionHandler:nil];
 }
 
 - (void) _rateLater:(id)argument {

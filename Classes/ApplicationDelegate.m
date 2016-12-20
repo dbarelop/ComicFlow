@@ -57,7 +57,7 @@ static ApplicationDelegate* _sharedInstance = nil;
 
 + (id) alloc {
   XLOG_DEBUG_CHECK(_sharedInstance == nil);
-  _sharedInstance = [[super alloc] init];
+  _sharedInstance = (ApplicationDelegate *) [[super alloc] init];
   return _sharedInstance;
 }
 
@@ -84,7 +84,7 @@ static ApplicationDelegate* _sharedInstance = nil;
   _databaseLogger = [[XLDatabaseLogger alloc] init];
   [XLSharedFacility addLogger:_databaseLogger];
 #if DEBUG
-  [XLSharedFacility addLogger:[[XLTelnetServerLogger alloc] init]];
+  [XLSharedFacility addLogger:[[[XLTelnetServerLogger alloc] init] autorelease]];
 #endif
   
   // Initialize overlay window
@@ -139,6 +139,11 @@ static ApplicationDelegate* _sharedInstance = nil;
   ;
 }
 
+- (void) dealloc {
+  [_spinnerView release];
+  [super dealloc];
+}
+
 @end
 
 @implementation ApplicationDelegate (Logging)
@@ -184,7 +189,7 @@ static ApplicationDelegate* _sharedInstance = nil;
 @implementation ApplicationDelegate (Alerts)
 
 - (BOOL) isAlertVisible {
-  return _alertView ? YES : NO;
+  return _alertView != nil;
 }
 
 - (void) _dismissAlertWithButtonIndex:(NSInteger)index {
@@ -260,7 +265,7 @@ static ApplicationDelegate* _sharedInstance = nil;
 @implementation ApplicationDelegate (Spinner)
 
 - (BOOL) isSpinnerVisible {
-  return _spinnerView ? YES : NO;
+  return _spinnerView != nil;
 }
 
 - (void) showSpinnerWithMessage:(NSString*)message fullScreen:(BOOL)fullScreen animated:(BOOL)animated {
@@ -273,15 +278,15 @@ static ApplicationDelegate* _sharedInstance = nil;
   indicator.hidesWhenStopped = NO;
   [indicator autorelease];
   CGSize size = indicator.frame.size;
-  frame.size.width = size.width + 2.0 * kSpinnerBorderWidth;
-  frame.size.height = size.height + 2.0 * kSpinnerBorderWidth;
+  frame.size.width = (CGFloat) (size.width + 2.0 * kSpinnerBorderWidth);
+  frame.size.height = (CGFloat) (size.height + 2.0 * kSpinnerBorderWidth);
   
   UILabel* label = nil;
   if (message) {
     label = [[UILabel alloc] init];
     label.backgroundColor = nil;
     label.opaque = NO;
-    label.font = [UIFont boldSystemFontOfSize:(fullScreen ? kSpinnerFullscreenFontSize : kSpinnerFontSize)];
+    label.font = [UIFont boldSystemFontOfSize:(CGFloat) (fullScreen ? kSpinnerFullscreenFontSize : kSpinnerFontSize)];
     label.textColor = [UIColor whiteColor];
     label.textAlignment = NSTextAlignmentCenter;
     label.numberOfLines = 0;
@@ -290,18 +295,18 @@ static ApplicationDelegate* _sharedInstance = nil;
     [label autorelease];
     CGRect rect = label.frame;
     rect.origin.x = kSpinnerBorderWidth;
-    rect.origin.y = frame.size.height - kSpinnerBorderWidth + (fullScreen ? kSpinnerFullscreenSpacing : kSpinnerSpacing);
+    rect.origin.y = (CGFloat) (frame.size.height - kSpinnerBorderWidth + (fullScreen ? kSpinnerFullscreenSpacing : kSpinnerSpacing));
     label.frame = rect;
     frame.size.width += rect.size.width - size.width;
     frame.size.height += rect.size.height + (fullScreen ? kSpinnerFullscreenSpacing : kSpinnerSpacing);
     CGRect temp = indicator.frame;
-    temp.origin.x = roundf(temp.origin.x - temp.size.width / 2.0 + rect.size.width / 2.0);
+    temp.origin.x = roundf((float) (temp.origin.x - temp.size.width / 2.0 + rect.size.width / 2.0));
     indicator.frame = temp;
   }
 
   CGRect bounds = _overlayWindow.bounds;
-  frame.origin.x = roundf(bounds.size.width / 2.0 - frame.size.width / 2.0);
-  frame.origin.y = roundf(bounds.size.height / 2.0 - frame.size.height / 2.0);
+  frame.origin.x = roundf((float) (bounds.size.width / 2.0 - frame.size.width / 2.0));
+  frame.origin.y = roundf((float) (bounds.size.height / 2.0 - frame.size.height / 2.0));
   UIView* spinnerView = [[UIView alloc] initWithFrame:frame];
   spinnerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
                                  UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;

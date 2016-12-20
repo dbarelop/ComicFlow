@@ -268,7 +268,7 @@ typedef enum {
 }
 
 - (void) update:(BOOL)force {
-  if (_updating == NO) {
+  if (!_updating) {
     XLOG_VERBOSE(force ? @"Force updating library" : @"Updating library");
     [_delegate libraryUpdaterWillStart:self];
     
@@ -307,8 +307,8 @@ typedef enum {
 
 // Called from GCD thread
 - (NSData*) _thumbnailDataForComicWithCoverImage:(CGImageRef)imageRef {
-  size_t contextWidth = _screenScale * kLibraryThumbnailWidth;
-  size_t contextHeight = _screenScale * kLibraryThumbnailHeight;
+  size_t contextWidth = (size_t) (_screenScale * kLibraryThumbnailWidth);
+  size_t contextHeight = (size_t) (_screenScale * kLibraryThumbnailHeight);
   
   CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
   CGContextRef context = CGBitmapContextCreate(NULL, contextWidth, contextHeight, 8, 0, colorspace,
@@ -339,8 +339,8 @@ typedef enum {
 
 // Called from GCD thread
 - (NSData*) _thumbnailDataForCollectionWithCoverImage:(CGImageRef)imageRef name:(NSString*)name {
-  size_t contextWidth = _screenScale * kLibraryThumbnailWidth;
-  size_t contextHeight = _screenScale * kLibraryThumbnailHeight;
+  size_t contextWidth = (size_t) (_screenScale * kLibraryThumbnailWidth);
+  size_t contextHeight = (size_t) (_screenScale * kLibraryThumbnailHeight);
   
   CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
   CGContextRef context = CGBitmapContextCreate(NULL, contextWidth, contextHeight, 8, 0, colorspace,
@@ -365,13 +365,13 @@ typedef enum {
   static NSMutableDictionary* attributes = nil;
   if (attributes == nil) {
     attributes = [[NSMutableDictionary alloc] init];
-    [attributes setObject:(id)kCFBooleanTrue forKey:(id)kCTForegroundColorFromContextAttributeName];
+    attributes[(id) kCTForegroundColorFromContextAttributeName] = (id) kCFBooleanTrue;
     CTFontRef font = CTFontCreateWithName(CFSTR(kCollectionFontName), kCollectionFontSize, NULL);
     if (font) {
-      [attributes setObject:(id)font forKey:(id)kCTFontAttributeName];
+      attributes[(id) kCTFontAttributeName] = (id) font;
       CFRelease(font);
     }
-    CTTextAlignment alignment = kCTCenterTextAlignment;
+    CTTextAlignment alignment = kCTTextAlignmentCenter;
     CTLineBreakMode lineBreaking = kCTLineBreakByWordWrapping;
     CTParagraphStyleSetting settings[] = {
                                           {kCTParagraphStyleSpecifierAlignment, sizeof(alignment), &alignment},
@@ -379,7 +379,7 @@ typedef enum {
                                          };
     CTParagraphStyleRef style = CTParagraphStyleCreate(settings, sizeof(settings) / sizeof(CTParagraphStyleSetting));
     if (style) {
-      [attributes setObject:(id)style forKey:(id)kCTParagraphStyleAttributeName];
+      attributes[(id) kCTParagraphStyleAttributeName] = (id) style;
       CFRelease(style);
     }
   }
@@ -399,7 +399,7 @@ typedef enum {
           CTFrameGetLineOrigins(frame, CFRangeMake(count - 1, 1), &origin);
           CGFloat descent;
           CTLineGetTypographicBounds(CFArrayGetValueAtIndex(lines, count - 1), NULL, &descent, NULL);
-          CGContextTranslateCTM(context, 0.0, -floorf((origin.y - descent - 1) / 2.0));
+          CGContextTranslateCTM(context, 0.0, -floorf((float) ((origin.y - descent - 1) / 2.0)));
         }
 #if TARGET_IPHONE_SIMULATOR
         CGContextSetShouldSmoothFonts(context, false);
@@ -408,7 +408,7 @@ typedef enum {
         CGContextSetRGBFillColor(context, 0.25, 0.25, 0.25, 1.0);
         CGContextSetTextMatrix(context, CGAffineTransformIdentity);
         CTFrameDraw(frame, context);
-        CGContextTranslateCTM(context, 0.0, -1.0);
+        CGContextTranslateCTM(context, 0.0, (CGFloat) -1.0);
         CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
         CGContextSetTextMatrix(context, CGAffineTransformIdentity);
         CTFrameDraw(frame, context);
@@ -486,7 +486,7 @@ typedef enum {
   
   // Check if this comic has already been processed
   Comic* comic = nil;
-  if (force == NO) {
+  if (!force) {
     NSData* data = [[NSFileManager defaultManager] extendedAttributeDataWithName:kLibraryExtendedAttribute forFileAtPath:path];
     if (data.length == sizeof(DatabaseSQLRowID)) {
       DatabaseSQLRowID rowID = *((DatabaseSQLRowID*)data.bytes);
@@ -630,10 +630,10 @@ static void _ZombieComicsMarkFunction(const void* key, const void* value, void* 
 #endif
       NSString* type = [[[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:NULL] fileType];
       if ([type isEqualToString:NSFileTypeRegular]) {
-        NSMutableArray* array = [directories objectForKey:@""];
+        NSMutableArray* array = directories[@""];
         if (array == nil) {
           array = [[NSMutableArray alloc] init];
-          [directories setObject:array forKey:@""];
+          directories[@""] = array;
           [array release];
         }
         [array addObject:path];
@@ -651,7 +651,7 @@ static void _ZombieComicsMarkFunction(const void* key, const void* value, void* 
             maximumProgress += 1.0;
           }
         }
-        [directories setObject:array forKey:path];
+        directories[path] = array;
         [array release];
       }
     }
@@ -725,7 +725,7 @@ static void _ZombieComicsMarkFunction(const void* key, const void* value, void* 
       }
       
       // Process comics in collection
-      NSArray* files = [directories objectForKey:directory];
+      NSArray* files = directories[directory];
       if (needsUpdate) {
         if (collection) {
           XLOG_VERBOSE(@"Scanning collection \"%@\" (%i)", directory, collection.sqlRowID);
@@ -761,7 +761,7 @@ static void _ZombieComicsMarkFunction(const void* key, const void* value, void* 
           
           currentProgress += 1.0;
           float progress = currentProgress / maximumProgress;
-          if (roundf(progress * 250.0) != roundf(lastProgress * 250.0)) {
+          if (roundf((float) (progress * 250.0)) != roundf((float) (lastProgress * 250.0))) {
             dispatch_async(dispatch_get_main_queue(), ^{
               [_delegate libraryUpdaterDidContinue:self progress:progress];
             });
@@ -807,7 +807,7 @@ static void _ZombieComicsMarkFunction(const void* key, const void* value, void* 
       } else {
         currentProgress += files.count;
         float progress = currentProgress / maximumProgress;
-        if (roundf(progress * 250.0) != roundf(lastProgress * 250.0)) {
+        if (roundf((float) (progress * 250.0)) != roundf((float) (lastProgress * 250.0))) {
           dispatch_async(dispatch_get_main_queue(), ^{
             [_delegate libraryUpdaterDidContinue:self progress:progress];
           });
