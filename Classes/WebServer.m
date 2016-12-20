@@ -27,10 +27,6 @@
 @implementation WebsiteServer
 
 - (BOOL) shouldUploadFileAtPath:(NSString*)path withTemporaryFile:(NSString*)tempPath {
-  if ([[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_ServerMode] == kServerMode_Limited) {
-    XLOG_ERROR(@"Upload rejected: web server is in limited mode");
-    return NO;
-  }
   return YES;
 }
 
@@ -39,10 +35,6 @@
 @implementation WebDAVServer
 
 - (BOOL) shouldUploadFileAtPath:(NSString*)path withTemporaryFile:(NSString*)tempPath {
-  if ([[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_ServerMode] == kServerMode_Limited) {
-    XLOG_ERROR(@"Upload rejected: web server is in limited mode");
-    return NO;
-  }
   return YES;
 }
 
@@ -85,9 +77,6 @@
         [(WebsiteServer*)_webServer setAllowedFileExtensions:fileExtensions];
         [(WebsiteServer*)_webServer setTitle:NSLocalizedString(@"SERVER_TITLE", nil)];
         [(WebsiteServer*)_webServer setPrologue:[NSString stringWithFormat:NSLocalizedString(@"SERVER_CONTENT", nil), [fileExtensions componentsJoinedByString:@", "]]];
-        if ([[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_ServerMode] != kServerMode_Full) {
-          [(WebsiteServer*)_webServer setPrologue:[[(WebsiteServer*)_webServer prologue] stringByAppendingFormat:NSLocalizedString(@"SERVER_LIMITED_CONTENT", nil), kTrialMaxUploads]];
-        }
         [(WebsiteServer*)_webServer setFooter:[NSString stringWithFormat:NSLocalizedString(@"SERVER_FOOTER_FORMAT", nil),
                                                 [[UIDevice currentDevice] name],
                                                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]]];

@@ -78,14 +78,7 @@
 @synthesize gridView=_gridView, navigationBar=_navigationBar, segmentedControl=_segmentedControl, menuView=_menuView,
             markReadButton=_markReadButton, markNewButton=_markNewButton, updateButton=_updateButton,
             forceUpdateButton=_forceUpdateButton, serverControl=_serverControl, addressLabel=_addressLabel,
-            infoLabel=_infoLabel, versionLabel=_versionLabel, dimmingSwitch=_dimmingSwitch, purchaseButton=_purchaseButton,
-            restoreButton=_restoreButton;
-
-- (void) updatePurchase {
-  BOOL enabled = [[NSUserDefaults standardUserDefaults] integerForKey:kDefaultKey_ServerMode] != kServerMode_Full ? YES : NO;
-  _purchaseButton.enabled = enabled;
-  _restoreButton.enabled = enabled;
-}
+            infoLabel=_infoLabel, versionLabel=_versionLabel, dimmingSwitch=_dimmingSwitch;
 
 - (void) _updateStatistics {
   NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[LibraryConnection libraryDatabasePath]
@@ -242,7 +235,6 @@ static void __DisplayQueueCallBack(void* info) {
   } else {
     [self _updateTimer:nil];
     [self _updateStatistics];
-    [self updatePurchase];
     [_menuController presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
     [_updateTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:kUpdateTimerInterval]];
   }
@@ -432,12 +424,7 @@ static void __DisplayQueueCallBack(void* info) {
   _updateButton.enabled = !updating;
   _forceUpdateButton.enabled = !updating;
   _dimmingSwitch.on = [(AppDelegate*)[AppDelegate sharedInstance] isScreenDimmed];
-  
-  if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber_iOS_7_0) {
-    [_purchaseButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-    [_restoreButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-  }
-  
+
   XLOG_DEBUG_CHECK(_updateTimer == nil);
   _updateTimer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture] interval:kUpdateTimerInterval target:self selector:@selector(_updateTimer:) userInfo:nil repeats:YES];
   [[NSRunLoop mainRunLoop] addTimer:_updateTimer forMode:NSRunLoopCommonModes];
@@ -464,9 +451,7 @@ static void __DisplayQueueCallBack(void* info) {
   self.infoLabel = nil;
   self.versionLabel = nil;
   self.dimmingSwitch = nil;
-  self.purchaseButton = nil;
-  self.restoreButton = nil;
-  
+
   [_menuController release];
   _menuController = nil;
 }
@@ -996,14 +981,6 @@ static void __ArrayApplierFunction(const void* value, void* context) {
 
 - (IBAction) toggleDimming:(id)sender {
   [(AppDelegate*)[AppDelegate sharedInstance] setScreenDimmed:_dimmingSwitch.on];
-}
-
-- (IBAction) purchase:(id)sender {
-  [(AppDelegate*)[AppDelegate sharedInstance] purchase];
-}
-
-- (IBAction) restore:(id)sender {
-  [(AppDelegate*)[AppDelegate sharedInstance] restore];
 }
 
 @end

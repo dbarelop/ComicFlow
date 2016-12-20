@@ -18,19 +18,10 @@
 #import "ApplicationDelegate.h"
 #import "WebServer.h"
 
-#define kStoreKitProductIdentifier @"web_uploader"
-#if DEBUG
-#define kTrialMaxUploads 5
-#else
-#define kTrialMaxUploads 50
-#endif
-
 @interface AppDelegate : ApplicationDelegate {
   NSTimer* _updateTimer;
   BOOL _needsUpdate;
-  WebServer* _webServer;
   UIWindow* _dimmingWindow;
-  BOOL _purchasing;
 }
 @property(nonatomic, getter=isScreenDimmed) BOOL screenDimmed;
 + (AppDelegate*) sharedDelegate;
@@ -38,11 +29,6 @@
 @end
 
 @interface AppDelegate (WebServer) <WebServerDelegate>
-@end
-
-@interface AppDelegate (StoreKit) <SKPaymentTransactionObserver, SKProductsRequestDelegate>
-- (void) purchase;
-- (void) restore;
 @end
 
 @interface AppDelegate (Events)

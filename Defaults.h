@@ -17,13 +17,6 @@
 #define kLibraryVersion 1
 
 #define kDefaultKey_ServerType @"serverType"
-#define kDefaultKey_ServerMode @"serverMode"
-typedef enum {
-  kServerMode_Limited = -1,
-  kServerMode_Trial = 0,
-  kServerMode_Full = 1
-} ServerMode;
-#define kDefaultKey_UploadsRemaining @"uploadsRemaining"
 
 #define kDefaultKey_ScreenDimmed @"screenDimmed"
 
