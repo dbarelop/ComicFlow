@@ -18,6 +18,7 @@
 #import "AppDelegate.h"
 #import "Defaults.h"
 #import "NetReachability.h"
+#import "NetworkSharesViewController.h"
 
 #define kAppStoreAppID @"409290355"
 #define kiOSAppStoreURLFormat @"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=%@"
@@ -235,6 +236,12 @@ static void __DisplayQueueCallBack(void* info) {
   }
 }
 
+- (void) _showNetworkShares:(id)sender {
+  NetworkSharesViewController* viewController = [[NetworkSharesViewController alloc] init];
+  [self presentViewController:viewController animated:YES completion:nil];
+  [viewController release];
+}
+
 - (void) _tap:(UITapGestureRecognizer*)recognizer {
   if (recognizer.state == UIGestureRecognizerStateEnded) {
     DatabaseObject* item = [_gridView itemAtLocation:[recognizer locationInView:_gridView] view:NULL];
@@ -393,8 +400,10 @@ static void __DisplayQueueCallBack(void* info) {
   
   UINavigationItem* item = [_navigationBar.items objectAtIndex:0];
   UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_toggleMenu:)];
-  item.rightBarButtonItems = @[settingsButton];
+  UIBarButtonItem* sharesButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SHARES_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_showNetworkShares:)];
+  item.rightBarButtonItems = @[settingsButton, sharesButton];
   [settingsButton release];
+  [sharesButton release];
 
   UIViewController* viewController = [[UIViewController alloc] init];
   viewController.view = _menuView;
@@ -507,8 +516,10 @@ static void __DisplayQueueCallBack(void* info) {
   if (collection) {
     UINavigationItem* item = [[UINavigationItem alloc] initWithTitle:collection.name];
     UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SETTINGS_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_toggleMenu:)];
-    item.rightBarButtonItems = @[settingsButton];
+    UIBarButtonItem* sharesButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"SHARES_BUTTON", nil) style:UIBarButtonItemStylePlain target:self action:@selector(_showNetworkShares:)];
+    item.rightBarButtonItems = @[settingsButton, sharesButton];
     [settingsButton release];
+    [sharesButton release];
     [barItems addObject:item];
     [item release];
   }
@@ -527,7 +538,7 @@ static void __DisplayQueueCallBack(void* info) {
   if (viewController) {
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
     viewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self presentModalViewController:viewController animated:YES];
+    [self presentViewController:viewController animated:YES completion:nil];
     [viewController release];
     
     if (comic != _currentComic) {

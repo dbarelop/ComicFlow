@@ -21,6 +21,8 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		801441F93AB1C3C3B3FEFE67 /* NetworkSharesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80144BBB2B28904D24AF4581 /* NetworkSharesViewController.m */; };
+		801442B8B597BF681E9BCA8E /* NetworkSharesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80144BDF3102C2422E70FE15 /* NetworkSharesViewController.xib */; };
 		E20590BE121E294B00A271CC /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E20590BD121E294B00A271CC /* libsqlite3.dylib */; };
 		E20590C0121E295000A271CC /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E20590BF121E295000A271CC /* CFNetwork.framework */; };
 		E2059155121E2F3B00A271CC /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2059154121E2F3B00A271CC /* libz.dylib */; };
@@ -176,6 +178,9 @@
 		2CF616F41293D8A6008FD89E /* ZoomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomView.h; sourceTree = "<group>"; };
 		2CF616F51293D8A6008FD89E /* ZoomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZoomView.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		80144BBB2B28904D24AF4581 /* NetworkSharesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkSharesViewController.m; sourceTree = "<group>"; };
+		80144BDF3102C2422E70FE15 /* NetworkSharesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkSharesViewController.xib; sourceTree = "<group>"; };
+		80144DB179FB94E4D342C9F1 /* NetworkSharesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkSharesViewController.h; sourceTree = "<group>"; };
 		E20590BD121E294B00A271CC /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		E20590BF121E295000A271CC /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		E2059154121E2F3B00A271CC /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -498,6 +503,8 @@
 				E27CFFA7168CA75900021417 /* UnRAR.m */,
 				E22A090118EB5F3200A4FF82 /* WebServer.h */,
 				E22A090218EB5F3200A4FF82 /* WebServer.m */,
+				80144BBB2B28904D24AF4581 /* NetworkSharesViewController.m */,
+				80144DB179FB94E4D342C9F1 /* NetworkSharesViewController.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -594,6 +601,7 @@
 				E2059928121EE21400A271CC /* MainWindow.xib */,
 				E2F8960C1C3C944300FC8891 /* LaunchScreen.xib */,
 				E2F896161C3C997000FC8891 /* Images.xcassets */,
+				80144BDF3102C2422E70FE15 /* NetworkSharesViewController.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1031,6 +1039,7 @@
 				1B236509154FABBA00A13B0D /* OverlayView-Arrow-Top@2x.png in Resources */,
 				1B23650A154FABBA00A13B0D /* OverlayView-Contents@2x.png in Resources */,
 				E22A08FF18EB5E6700A4FF82 /* GCDWebUploader.bundle in Resources */,
+				801442B8B597BF681E9BCA8E /* NetworkSharesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1144,6 +1153,7 @@
 				E22A090018EB5E6700A4FF82 /* GCDWebUploader.m in Sources */,
 				E2A73D3D1A0C6C2F0052B750 /* GCDTelnetServer.m in Sources */,
 				E2A73D3E1A0C6C2F0052B750 /* NSMutableString+ANSI.m in Sources */,
+				801441F93AB1C3C3B3FEFE67 /* NetworkSharesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

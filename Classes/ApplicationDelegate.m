@@ -177,7 +177,7 @@ static ApplicationDelegate* _sharedInstance = nil;
                                                                                                     target:self
                                                                                                     action:@selector(_logViewControllerDone:)] autorelease];
   UINavigationController* navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-  [_viewController presentModalViewController:navigationController animated:YES];
+  [_viewController presentViewController:viewController animated:YES completion:nil];
   [navigationController release];
   [viewController release];
   

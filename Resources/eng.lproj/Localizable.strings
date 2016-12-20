@@ -1,4 +1,5 @@
 "SETTINGS_BUTTON" = "Settings";
+"SHARES_BUTTON" = "Network shares";
 
 "INFO_FORMAT" = "%i Comics | %i Series | %.0f MB Database";
 "VERSION_FORMAT" = "ComicFlow Version %@";
