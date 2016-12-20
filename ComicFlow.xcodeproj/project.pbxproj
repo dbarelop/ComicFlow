@@ -972,7 +972,7 @@
 				LastUpgradeCheck = 0720;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = 88W3E55T4B;
+						DevelopmentTeam = KUAPCU9D68;
 					};
 				};
 			};
@@ -1182,6 +1182,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = KUAPCU9D68;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
@@ -1200,6 +1201,7 @@
 					"-Wl,-search_paths_first",
 					"-lwebp",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = dbarelop;
 				PRODUCT_NAME = ComicFlow;
 			};
 			name = Debug;
@@ -1209,6 +1211,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = KUAPCU9D68;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
@@ -1227,6 +1230,7 @@
 					"-Wl,-search_paths_first",
 					"-lwebp",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = dbarelop;
 				PRODUCT_NAME = ComicFlow;
 			};
 			name = Release;
