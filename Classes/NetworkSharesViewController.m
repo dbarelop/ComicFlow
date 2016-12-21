@@ -17,12 +17,10 @@
 
 @implementation NetworkSharesViewController
 
+NSMutableArray* values;
+
 - (id) init:(UIWindow *)window {
   return self;
-}
-
-- (void) saveState {
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -30,19 +28,44 @@
 
   UINavigationItem* item = [_navigationBar.items objectAtIndex:0];
   UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(back)];
+  UIBarButtonItem* refreshButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(refresh)];
   item.leftBarButtonItem = backButton;
+  item.rightBarButtonItem = refreshButton;
 }
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  values = [[NSMutableArray alloc] initWithArray:@[@"one", @"two", @"three"]];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+  return [values count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+  static NSString* identifier = @"SimpleTableCell";
+  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+  if (cell == nil) {
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+  }
+  cell.textLabel.text = values[(NSUInteger) indexPath.row];
+  return cell;
+}
+
 
 @end
 
 @implementation NetworkSharesViewController (IBActions)
 
-- (IBAction) changeText:(id)sender {
-  _label.text = @"It changed!";
-}
-
 - (IBAction) back {
   [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction) refresh {
+  //[values removeAllObjects];
+  [values addObjectsFromArray:@[@"four", @"five", @"six"]];
+  [_tableView reloadData];
 }
 
 @end

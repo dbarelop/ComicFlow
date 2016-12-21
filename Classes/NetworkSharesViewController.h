@@ -15,18 +15,15 @@
 
 #import "NavigationControl.h"
 
-@interface NetworkSharesViewController : UIViewController <UINavigationBarDelegate> {
+@interface NetworkSharesViewController : UIViewController <UINavigationBarDelegate, UITableViewDelegate, UITableViewDataSource> {
 @private
   UINavigationBar* _navigationBar;
-
-  UILabel* _label;
+  UITableView* _tableView;
 }
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
-@property(nonatomic, retain) IBOutlet UILabel* label;
+@property(nonatomic, retain) IBOutlet UITableView* tableView;
 - (id) init:(UIWindow*)window;
-- (void) saveState;
 @end
 
 @interface NetworkSharesViewController (IBActions)
-- (IBAction) changeText:(id)sender;
 @end
