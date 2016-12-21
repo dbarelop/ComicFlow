@@ -24,6 +24,17 @@
   return self;
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  if (_path.length) {
+    [self reloadPath];
+  }
+  if (_smbAuth == nil) {
+    _smbAuth = [[KxSMBAuth alloc] init];
+  }
+}
+
 - (void) viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
@@ -60,19 +71,33 @@
   return cell;
 }
 
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+  [_tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+  KxSMBItem* item = _items[(NSUInteger) indexPath.row];
+  if ([item isKindOfClass:[KxSMBItemTree class]]) {
+    NetworkSharesViewController* viewController = [[NetworkSharesViewController alloc] init];
+    viewController.smbAuth = _smbAuth;
+    viewController.path = item.path;
+    [self presentViewController:viewController animated:NO completion:nil];
+  } else if ([item isKindOfClass:[KxSMBItemFile class]]) {
+    // TODO: implement
+  }
+}
+
 - (void) reloadPath {
   NSString* path;
   if (_path.length) {
     path = _path;
-    self.title = path.lastPathComponent;
+    _navigationBar.topItem.title = path.lastPathComponent;
 
     _items = nil;
     [_tableView reloadData];
 
     KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
-    [provider fetchAtPath:path auth:_defaultAuth block:^(id result) {
+    [provider fetchAtPath:path auth:_smbAuth block:^(id result) {
       if ([result isKindOfClass:[NSError class]]) {
-        self.title = ((NSError*) result).localizedDescription;
+        _navigationBar.topItem.title = ((NSError*) result).localizedDescription;
       } else if ([result isKindOfClass:[NSArray class]]) {
         _items = [result copy];
         [_tableView reloadData];
@@ -100,11 +125,30 @@
 - (IBAction) connect {
   UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Connect to host" message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+    textField.text = @"smb://";
     textField.placeholder = @"smb://";
+    textField.clearButtonMode = UITextFieldViewModeAlways;
+  }];
+  [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+    textField.text = @"WORKGROUP";
+    textField.placeholder = @"Domain";
+    textField.clearButtonMode = UITextFieldViewModeAlways;
+  }];
+  [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+    textField.text = @"guest";
+    textField.placeholder = @"Username";
+    textField.clearButtonMode = UITextFieldViewModeAlways;
+  }];
+  [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+    textField.placeholder = @"Password";
+    textField.secureTextEntry = YES;
     textField.clearButtonMode = UITextFieldViewModeAlways;
   }];
   [alert addAction:[UIAlertAction actionWithTitle:@"Go" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
     self.path = alert.textFields[0].text;
+    self.smbAuth.workgroup = alert.textFields[1].text;
+    self.smbAuth.username = alert.textFields[2].text;
+    self.smbAuth.password = alert.textFields[3].text;
     [self reloadPath];
   }]];
   [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];

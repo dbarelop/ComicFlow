@@ -21,7 +21,7 @@
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
 @property(nonatomic, retain) IBOutlet UITableView* tableView;
 @property(readwrite, nonatomic, strong) NSString* path;
-@property(readwrite, nonatomic, strong) KxSMBAuth* defaultAuth;
+@property(readwrite, nonatomic, strong) KxSMBAuth* smbAuth;
 - (id) init:(UIWindow*)window;
 @end
 
