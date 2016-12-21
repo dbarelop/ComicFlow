@@ -7,3 +7,6 @@
 [submodule "XLFacility"]
 	path = XLFacility
 	url = https://github.com/swisspol/XLFacility.git
+[submodule "kxsmb"]
+	path = kxsmb
+	url = https://github.com/kolyvan/kxsmb
