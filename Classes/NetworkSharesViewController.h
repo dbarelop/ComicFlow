@@ -15,13 +15,13 @@
 
 #import "NavigationControl.h"
 
-@interface NetworkSharesViewController : UIViewController <UINavigationBarDelegate, UITableViewDelegate, UITableViewDataSource> {
-@private
-  UINavigationBar* _navigationBar;
-  UITableView* _tableView;
-}
+@class KxSMBAuth;
+
+@interface NetworkSharesViewController : UIViewController <UINavigationBarDelegate, UITableViewDelegate, UITableViewDataSource>
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
 @property(nonatomic, retain) IBOutlet UITableView* tableView;
+@property(readwrite, nonatomic, strong) NSString* path;
+@property(readwrite, nonatomic, strong) KxSMBAuth* defaultAuth;
 - (id) init:(UIWindow*)window;
 @end
 

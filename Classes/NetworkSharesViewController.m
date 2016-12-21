@@ -14,43 +14,74 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #import "NetworkSharesViewController.h"
+#import "KxSMBProvider.h"
 
-@implementation NetworkSharesViewController
-
-NSMutableArray* values;
+@implementation NetworkSharesViewController {
+  NSArray* _items;
+}
 
 - (id) init:(UIWindow *)window {
   return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void) viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
   UINavigationItem* item = [_navigationBar.items objectAtIndex:0];
   UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(back)];
   UIBarButtonItem* refreshButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(refresh)];
+  UIBarButtonItem* connectButton = [[UIBarButtonItem alloc] initWithTitle:@"Connect" style:UIBarButtonItemStylePlain target:self action:@selector(connect)];
   item.leftBarButtonItem = backButton;
-  item.rightBarButtonItem = refreshButton;
-}
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-
-  values = [[NSMutableArray alloc] initWithArray:@[@"one", @"two", @"three"]];
+  item.rightBarButtonItems = @[refreshButton, connectButton];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-  return [values count];
+  return [_items count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-  static NSString* identifier = @"SimpleTableCell";
-  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+  static NSString* cellIdentifier = @"Cell";
+  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
   if (cell == nil) {
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
   }
-  cell.textLabel.text = values[(NSUInteger) indexPath.row];
+
+  KxSMBItem* item = _items[(NSUInteger) indexPath.row];
+  cell.textLabel.text = item.path.lastPathComponent;
+
+  if ([item isKindOfClass:[KxSMBItemTree class]]) {
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.detailTextLabel.text = @"";
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%lld", item.stat.size];
+  }
+
   return cell;
+}
+
+- (void) reloadPath {
+  NSString* path;
+  if (_path.length) {
+    path = _path;
+    self.title = path.lastPathComponent;
+
+    _items = nil;
+    [_tableView reloadData];
+
+    KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
+    [provider fetchAtPath:path auth:_defaultAuth block:^(id result) {
+      if ([result isKindOfClass:[NSError class]]) {
+        self.title = ((NSError*) result).localizedDescription;
+      } else if ([result isKindOfClass:[NSArray class]]) {
+        _items = [result copy];
+        [_tableView reloadData];
+      } else if ([result isKindOfClass:[KxSMBItem class]]) {
+        _items = @[result];
+        [_tableView reloadData];
+      }
+    }];
+  }
 }
 
 
@@ -63,9 +94,21 @@ NSMutableArray* values;
 }
 
 - (IBAction) refresh {
-  //[values removeAllObjects];
-  [values addObjectsFromArray:@[@"four", @"five", @"six"]];
-  [_tableView reloadData];
+  // TODO: implement
+}
+
+- (IBAction) connect {
+  UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Connect to host" message:nil preferredStyle:UIAlertControllerStyleAlert];
+  [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+    textField.placeholder = @"smb://";
+    textField.clearButtonMode = UITextFieldViewModeAlways;
+  }];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Go" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+    self.path = alert.textFields[0].text;
+    [self reloadPath];
+  }]];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end

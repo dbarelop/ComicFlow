@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06A790B81E0AB827008B3E40 /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B31E0AB827008B3E40 /* libsmbclient.a */; };
+		06A790B91E0AB827008B3E40 /* libtalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B41E0AB827008B3E40 /* libtalloc.a */; };
+		06A790BA1E0AB827008B3E40 /* libtdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B51E0AB827008B3E40 /* libtdb.a */; };
+		06A790BB1E0AB827008B3E40 /* libtevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B61E0AB827008B3E40 /* libtevent.a */; };
+		06A790BC1E0AB827008B3E40 /* libwbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B71E0AB827008B3E40 /* libwbclient.a */; };
+		06A790C01E0AB884008B3E40 /* KxSMBProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 06A790BF1E0AB884008B3E40 /* KxSMBProvider.m */; };
+		06A790C51E0AC7F4008B3E40 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790C41E0AC7F4008B3E40 /* libresolv.tbd */; };
+		06A790C71E0AC7FD008B3E40 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790C61E0AC7FD008B3E40 /* libiconv.tbd */; };
+		06A790C91E0AC808008B3E40 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790C81E0AC808008B3E40 /* libz.tbd */; };
 		1B236502154FABBA00A13B0D /* DocumentView-Shadow-Left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B2364F9154FABBA00A13B0D /* DocumentView-Shadow-Left@2x.png */; };
 		1B236503154FABBA00A13B0D /* DocumentView-Shadow-Right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B2364FA154FABBA00A13B0D /* DocumentView-Shadow-Right@2x.png */; };
 		1B236504154FABBA00A13B0D /* NavigationControl-Marker@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B2364FB154FABBA00A13B0D /* NavigationControl-Marker@2x.png */; };
@@ -159,6 +168,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		06A790B31E0AB827008B3E40 /* libsmbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsmbclient.a; path = kxsmb/libs/libsmbclient.a; sourceTree = "<group>"; };
+		06A790B41E0AB827008B3E40 /* libtalloc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtalloc.a; path = kxsmb/libs/libtalloc.a; sourceTree = "<group>"; };
+		06A790B51E0AB827008B3E40 /* libtdb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtdb.a; path = kxsmb/libs/libtdb.a; sourceTree = "<group>"; };
+		06A790B61E0AB827008B3E40 /* libtevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtevent.a; path = kxsmb/libs/libtevent.a; sourceTree = "<group>"; };
+		06A790B71E0AB827008B3E40 /* libwbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwbclient.a; path = kxsmb/libs/libwbclient.a; sourceTree = "<group>"; };
+		06A790BE1E0AB884008B3E40 /* KxSMBProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KxSMBProvider.h; path = kxsmb/KxSMBProvider.h; sourceTree = "<group>"; };
+		06A790BF1E0AB884008B3E40 /* KxSMBProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KxSMBProvider.m; path = kxsmb/KxSMBProvider.m; sourceTree = "<group>"; };
+		06A790C11E0AB8B5008B3E40 /* libsmbclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libsmbclient.h; path = kxsmb/libs/libsmbclient.h; sourceTree = "<group>"; };
+		06A790C21E0AB8B5008B3E40 /* talloc_stack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = talloc_stack.h; path = kxsmb/libs/talloc_stack.h; sourceTree = "<group>"; };
+		06A790C31E0AB8B5008B3E40 /* talloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = talloc.h; path = kxsmb/libs/talloc.h; sourceTree = "<group>"; };
+		06A790C41E0AC7F4008B3E40 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		06A790C61E0AC7FD008B3E40 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		06A790C81E0AC808008B3E40 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		1B2364F9154FABBA00A13B0D /* DocumentView-Shadow-Left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentView-Shadow-Left@2x.png"; sourceTree = "<group>"; };
 		1B2364FA154FABBA00A13B0D /* DocumentView-Shadow-Right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentView-Shadow-Right@2x.png"; sourceTree = "<group>"; };
 		1B2364FB154FABBA00A13B0D /* NavigationControl-Marker@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "NavigationControl-Marker@2x.png"; sourceTree = "<group>"; };
@@ -462,6 +484,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06A790C91E0AC808008B3E40 /* libz.tbd in Frameworks */,
+				06A790C71E0AC7FD008B3E40 /* libiconv.tbd in Frameworks */,
+				06A790C51E0AC7F4008B3E40 /* libresolv.tbd in Frameworks */,
+				06A790B81E0AB827008B3E40 /* libsmbclient.a in Frameworks */,
+				06A790B91E0AB827008B3E40 /* libtalloc.a in Frameworks */,
+				06A790BA1E0AB827008B3E40 /* libtdb.a in Frameworks */,
+				06A790BB1E0AB827008B3E40 /* libtevent.a in Frameworks */,
+				06A790BC1E0AB827008B3E40 /* libwbclient.a in Frameworks */,
 				E21F982418060E3000A9B745 /* Security.framework in Frameworks */,
 				E2B680E516915033001CF037 /* StoreKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -482,6 +512,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06A790B21E0AB827008B3E40 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				06A790C81E0AC808008B3E40 /* libz.tbd */,
+				06A790C61E0AC7FD008B3E40 /* libiconv.tbd */,
+				06A790C41E0AC7F4008B3E40 /* libresolv.tbd */,
+				06A790B31E0AB827008B3E40 /* libsmbclient.a */,
+				06A790B41E0AB827008B3E40 /* libtalloc.a */,
+				06A790B51E0AB827008B3E40 /* libtdb.a */,
+				06A790B61E0AB827008B3E40 /* libtevent.a */,
+				06A790B71E0AB827008B3E40 /* libwbclient.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		06A790BD1E0AB862008B3E40 /* kxsmb */ = {
+			isa = PBXGroup;
+			children = (
+				06A790C11E0AB8B5008B3E40 /* libsmbclient.h */,
+				06A790C21E0AB8B5008B3E40 /* talloc_stack.h */,
+				06A790C31E0AB8B5008B3E40 /* talloc.h */,
+				06A790BE1E0AB884008B3E40 /* KxSMBProvider.h */,
+				06A790BF1E0AB884008B3E40 /* KxSMBProvider.m */,
+			);
+			name = kxsmb;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -524,6 +581,7 @@
 				E229344C121E285200484F9F /* Info.plist */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				32CA4F630368D1EE00C91783 /* Prefix.pch */,
+				06A790BD1E0AB862008B3E40 /* kxsmb */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				E27CFFAA168CA79700021417 /* Minizip-1.1 */,
 				E27CFFB8168CA7A200021417 /* UnRAR-3.9.10 */,
@@ -537,6 +595,7 @@
 				E2A73D221A0C6C160052B750 /* GCDNetworking */,
 				29B97323FDCFA39411CA2CEA /* Frameworks and Libraries */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				06A790B21E0AB827008B3E40 /* Frameworks */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1111,6 +1170,7 @@
 				E2A73D211A0C6BE40052B750 /* XLTelnetServerLogger.m in Sources */,
 				E27C0049168CA7A200021417 /* filefn.cpp in Sources */,
 				E27C004A168CA7A200021417 /* filestr.cpp in Sources */,
+				06A790C01E0AB884008B3E40 /* KxSMBProvider.m in Sources */,
 				E22A090318EB5F3200A4FF82 /* WebServer.m in Sources */,
 				E27C004B168CA7A200021417 /* find.cpp in Sources */,
 				E27C004C168CA7A200021417 /* getbits.cpp in Sources */,
@@ -1203,10 +1263,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include/libxml2",
 					"libwebp/$(PLATFORM_NAME)/include",
+					"$(SRCROOT)/kxsmb/libs",
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "libwebp/$(PLATFORM_NAME)/lib";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"libwebp/$(PLATFORM_NAME)/lib",
+					"$(PROJECT_DIR)/kxsmb/libs",
+				);
 				OTHER_LDFLAGS = (
 					"-Wl,-search_paths_first",
 					"-lwebp",
@@ -1232,10 +1296,14 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/include/libxml2",
 					"libwebp/$(PLATFORM_NAME)/include",
+					"$(SRCROOT)/kxsmb/libs",
 				);
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "libwebp/$(PLATFORM_NAME)/lib";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"libwebp/$(PLATFORM_NAME)/lib",
+					"$(PROJECT_DIR)/kxsmb/libs",
+				);
 				OTHER_LDFLAGS = (
 					"-Wl,-search_paths_first",
 					"-lwebp",
