@@ -27,12 +27,15 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (_path.length) {
-    [self reloadPath];
-  }
   if (_smbAuth == nil) {
     _smbAuth = [[KxSMBAuth alloc] init];
+    _path = @"smb://";
+    _smbAuth.workgroup = @"WORKGROUP";
+    _smbAuth.username = @"guest";
+    _smbAuth.password = @"";
   }
+
+  [self reloadPath];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -89,7 +92,8 @@
   NSString* path;
   if (_path.length) {
     path = _path;
-    _navigationBar.topItem.title = path.lastPathComponent;
+    _navigationBar.topItem.title = [NSString stringWithFormat:@"%@@%@", _smbAuth.username, path.lastPathComponent];
+    [[[_navigationBar.items objectAtIndex:0].rightBarButtonItems objectAtIndex:0] setEnabled:YES];
 
     _items = nil;
     [_tableView reloadData];
@@ -106,6 +110,8 @@
         [_tableView reloadData];
       }
     }];
+  } else {
+    [[[_navigationBar.items objectAtIndex:0].rightBarButtonItems objectAtIndex:0] setEnabled:NO];
   }
 }
 
@@ -119,23 +125,23 @@
 }
 
 - (IBAction) refresh {
-  // TODO: implement
+  [self reloadPath];
 }
 
 - (IBAction) connect {
   UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Connect to host" message:nil preferredStyle:UIAlertControllerStyleAlert];
   [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
-    textField.text = @"smb://";
+    textField.text = _path;
     textField.placeholder = @"smb://";
     textField.clearButtonMode = UITextFieldViewModeAlways;
   }];
   [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
-    textField.text = @"WORKGROUP";
+    textField.text = _smbAuth.workgroup;
     textField.placeholder = @"Domain";
     textField.clearButtonMode = UITextFieldViewModeAlways;
   }];
   [alert addTextFieldWithConfigurationHandler:^(UITextField* textField) {
-    textField.text = @"guest";
+    textField.text = _smbAuth.username;
     textField.placeholder = @"Username";
     textField.clearButtonMode = UITextFieldViewModeAlways;
   }];
