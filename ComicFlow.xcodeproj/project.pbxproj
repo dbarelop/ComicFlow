@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0607C5AF1E146C05003312A5 /* FileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0607C5AE1E146C05003312A5 /* FileViewController.xib */; };
-		0607C5B11E146C28003312A5 /* FileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0607C5B01E146C28003312A5 /* FileViewController.m */; };
+		0607C5AF1E146C05003312A5 /* NetworkFileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0607C5AE1E146C05003312A5 /* NetworkFileViewController.xib */; };
+		0607C5B11E146C28003312A5 /* NetworkFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0607C5B01E146C28003312A5 /* NetworkFileViewController.m */; };
 		06A790B81E0AB827008B3E40 /* libsmbclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B31E0AB827008B3E40 /* libsmbclient.a */; };
 		06A790B91E0AB827008B3E40 /* libtalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B41E0AB827008B3E40 /* libtalloc.a */; };
 		06A790BA1E0AB827008B3E40 /* libtdb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A790B51E0AB827008B3E40 /* libtdb.a */; };
@@ -170,9 +170,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0607C5AE1E146C05003312A5 /* FileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FileViewController.xib; sourceTree = "<group>"; };
-		0607C5B01E146C28003312A5 /* FileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileViewController.m; sourceTree = "<group>"; };
-		0607C5B21E146C32003312A5 /* FileViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileViewController.h; sourceTree = "<group>"; };
+		0607C5AE1E146C05003312A5 /* NetworkFileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NetworkFileViewController.xib; sourceTree = "<group>"; };
+		0607C5B01E146C28003312A5 /* NetworkFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkFileViewController.m; sourceTree = "<group>"; };
+		0607C5B21E146C32003312A5 /* NetworkFileViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkFileViewController.h; sourceTree = "<group>"; };
 		0607C5B31E1478CD003312A5 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		06A790B31E0AB827008B3E40 /* libsmbclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsmbclient.a; path = kxsmb/libs/libsmbclient.a; sourceTree = "<group>"; };
 		06A790B41E0AB827008B3E40 /* libtalloc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtalloc.a; path = kxsmb/libs/libtalloc.a; sourceTree = "<group>"; };
@@ -569,8 +569,8 @@
 				E22A090218EB5F3200A4FF82 /* WebServer.m */,
 				80144BBB2B28904D24AF4581 /* NetworkSharesViewController.m */,
 				80144DB179FB94E4D342C9F1 /* NetworkSharesViewController.h */,
-				0607C5B01E146C28003312A5 /* FileViewController.m */,
-				0607C5B21E146C32003312A5 /* FileViewController.h */,
+				0607C5B01E146C28003312A5 /* NetworkFileViewController.m */,
+				0607C5B21E146C32003312A5 /* NetworkFileViewController.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -670,7 +670,7 @@
 				E2F8960C1C3C944300FC8891 /* LaunchScreen.xib */,
 				E2F896161C3C997000FC8891 /* Images.xcassets */,
 				80144BDF3102C2422E70FE15 /* NetworkSharesViewController.xib */,
-				0607C5AE1E146C05003312A5 /* FileViewController.xib */,
+				0607C5AE1E146C05003312A5 /* NetworkFileViewController.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1084,7 +1084,7 @@
 				E24036C01891A1880098F028 /* Icon_76x76.png in Resources */,
 				E2CAA9E5122295F800A4D85A /* DocumentView-Shadow-Right.png in Resources */,
 				E2E50D3C18920DEC00908424 /* Localizable.strings in Resources */,
-				0607C5AF1E146C05003312A5 /* FileViewController.xib in Resources */,
+				0607C5AF1E146C05003312A5 /* NetworkFileViewController.xib in Resources */,
 				E24036C11891A1880098F028 /* Icon_76x76@2x.png in Resources */,
 				E26703791228D7D0009C4EBB /* NavigationControl-Marker.png in Resources */,
 				E2B79A671C70FD74009DD383 /* Icon_83.5x83.5@2x.png in Resources */,
@@ -1196,7 +1196,7 @@
 				E27C005C168CA7A200021417 /* pathfn.cpp in Sources */,
 				E2C73E9519F2090300BEC354 /* ApplicationDelegate.m in Sources */,
 				E27C005F168CA7A200021417 /* rarvm.cpp in Sources */,
-				0607C5B11E146C28003312A5 /* FileViewController.m in Sources */,
+				0607C5B11E146C28003312A5 /* NetworkFileViewController.m in Sources */,
 				E27C0061168CA7A200021417 /* rawread.cpp in Sources */,
 				E27C0062168CA7A200021417 /* rdwrfn.cpp in Sources */,
 				E27C0064168CA7A200021417 /* recvol.cpp in Sources */,

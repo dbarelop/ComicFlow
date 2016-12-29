@@ -17,7 +17,7 @@
 
 @class KxSMBItemFile;
 
-@interface FileViewController : UIViewController <UINavigationBarDelegate>
+@interface NetworkFileViewController : UIViewController <UINavigationBarDelegate>
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
 @property(nonatomic, retain) IBOutlet UIProgressView* downloadProgress;
 @property(nonatomic, retain) IBOutlet UILabel* downloadLabel;

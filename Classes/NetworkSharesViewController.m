@@ -15,7 +15,7 @@
 
 #import "NetworkSharesViewController.h"
 #import "KxSMBProvider.h"
-#import "FileViewController.h"
+#import "NetworkFileViewController.h"
 
 @implementation NetworkSharesViewController {
   NSArray* _items;
@@ -85,7 +85,7 @@
     viewController.path = item.path;
     [self presentViewController:viewController animated:NO completion:nil];
   } else if ([item isKindOfClass:[KxSMBItemFile class]]) {
-    FileViewController* viewController = [[FileViewController alloc] init];
+    NetworkFileViewController* viewController = [[NetworkFileViewController alloc] init];
     viewController.smbFile = (KxSMBItemFile*) item;
     [self presentViewController:viewController animated:NO completion:nil];
   }

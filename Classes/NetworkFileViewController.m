@@ -13,13 +13,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#import "FileViewController.h"
+#import "NetworkFileViewController.h"
 #import "KxSMBProvider.h"
 #import "MiniZip.h"
 #import "UnRAR.h"
 #import "ImageDecompression.h"
 
-@implementation FileViewController {
+@implementation NetworkFileViewController {
   UIBarButtonItem* _downloadButton;
   NSFileHandle* _fileHandle;
   NSString* _filePath;
@@ -132,7 +132,7 @@
 - (void) download {
   __weak __typeof(self) weakSelf = self;
   [_smbFile readDataOfLength:1024*1024 block:^(id result) {
-    FileViewController* p = weakSelf;
+    NetworkFileViewController* p = weakSelf;
     if (p) {
       [p updateDownloadStatus:result];
     }
@@ -140,7 +140,7 @@
 }
 @end
 
-@implementation FileViewController (IBActions)
+@implementation NetworkFileViewController (IBActions)
 - (IBAction) back {
   [self dismissViewControllerAnimated:YES completion:nil];
 }
