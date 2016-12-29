@@ -43,10 +43,11 @@
   [super viewWillAppear:animated];
 
   UINavigationItem* item = [_navigationBar.items objectAtIndex:0];
+  UIBarButtonItem* closeButton = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStylePlain target:self action:@selector(close)];
   UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(back)];
   UIBarButtonItem* refreshButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(refresh)];
   UIBarButtonItem* connectButton = [[UIBarButtonItem alloc] initWithTitle:@"Connect" style:UIBarButtonItemStylePlain target:self action:@selector(connect)];
-  item.leftBarButtonItem = backButton;
+  item.leftBarButtonItems = @[backButton, closeButton];
   item.rightBarButtonItems = @[refreshButton, connectButton];
 }
 
@@ -123,8 +124,12 @@
 
 @implementation NetworkSharesViewController (IBActions)
 
+- (IBAction) close {
+  [self.view.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (IBAction) back {
-  [self dismissViewControllerAnimated:YES completion:nil];
+  [self dismissViewControllerAnimated:![[self presentingViewController] isKindOfClass:[NetworkSharesViewController class]] completion:nil];
 }
 
 - (IBAction) refresh {
