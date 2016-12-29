@@ -21,5 +21,6 @@
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
 @property(nonatomic, retain) IBOutlet UIProgressView* downloadProgress;
 @property(nonatomic, retain) IBOutlet UILabel* downloadLabel;
+@property(nonatomic, retain) IBOutlet UIImageView* contentView;
 @property (readwrite, nonatomic, strong) KxSMBItemFile* smbFile;
 @end

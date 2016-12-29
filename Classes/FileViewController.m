@@ -15,6 +15,9 @@
 
 #import "FileViewController.h"
 #import "KxSMBProvider.h"
+#import "MiniZip.h"
+#import "UnRAR.h"
+#import "ImageDecompression.h"
 
 @implementation FileViewController {
   UIBarButtonItem* _downloadButton;
@@ -94,10 +97,34 @@
           [self closeFiles];
           [_downloadButton setTitle:@"Done"];
           [_downloadButton setEnabled:NO];
+          [self displayCover];
         } else {
           [self download];
         }
       }
+    }
+  }
+}
+
+- (void) displayCover {
+  // Display cover image for CBZ files
+  NSString* extension = [_filePath pathExtension];
+  if ([extension caseInsensitiveCompare:@"zip"] || [extension caseInsensitiveCompare:@"cbz"]) {
+    MiniZip *contents = [[MiniZip alloc] initWithArchiveAtPath:_filePath];
+    NSArray *pages = [contents retrieveFileList];
+    if ([pages count] > 0) {
+      NSString *firstPage = pages[0];
+      NSString *temp = [NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]];
+      if ([contents extractFile:firstPage toPath:temp]) {
+        NSData *coverData = [[NSData alloc] initWithContentsOfFile:temp];
+        NSString *coverExtension = [firstPage pathExtension];
+        // TODO: adjust size
+        CGImageRef cover = CreateCGImageFromFileData(coverData, coverExtension, CGSizeMake(800, 800), NO);
+        UIImage* image = [[UIImage alloc] initWithCGImage:cover];
+        UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+        [_contentView addSubview:imageView];
+      }
+      [[NSFileManager defaultManager] removeItemAtPath:temp error:NULL];
     }
   }
 }
