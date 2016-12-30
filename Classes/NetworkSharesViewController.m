@@ -47,8 +47,9 @@
   UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(back)];
   UIBarButtonItem* refreshButton = [[UIBarButtonItem alloc] initWithTitle:@"Refresh" style:UIBarButtonItemStylePlain target:self action:@selector(refresh)];
   UIBarButtonItem* connectButton = [[UIBarButtonItem alloc] initWithTitle:@"Connect" style:UIBarButtonItemStylePlain target:self action:@selector(connect)];
+  UIBarButtonItem* downloadButton = [[UIBarButtonItem alloc] initWithTitle:@"Download folder" style:UIBarButtonItemStylePlain target:self action:@selector(downloadFolder)];
   item.leftBarButtonItems = @[backButton, closeButton];
-  item.rightBarButtonItems = @[refreshButton, connectButton];
+  item.rightBarButtonItems = @[refreshButton, connectButton, downloadButton];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -119,6 +120,42 @@
   }
 }
 
+- (void) downloadFolder:(NSString*) path {
+  // Create the folder
+  NSString* localFolder = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  NSString* originalPath = [[_path stringByDeletingLastPathComponent] stringByReplacingOccurrencesOfString:@":/" withString:@"://"];
+  NSString* relativePath = [path stringByReplacingOccurrencesOfString:originalPath withString:localFolder];
+  NSError* error;
+  [[[NSFileManager alloc] init] createDirectoryAtPath:relativePath withIntermediateDirectories:NO attributes:nil error:&error];
+  // Download the contents
+  KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
+  [provider fetchAtPath:path auth:_smbAuth block:^(id result) {
+    if ([result isKindOfClass:[NSArray class]]) {
+      for (KxSMBItem* item in result) {
+        if ([item type] == KxSMBItemTypeFile) {
+          KxSMBItemFile* file = (KxSMBItemFile *) item;
+          [self downloadFile:file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+        } else if ([item type] == KxSMBItemTypeDir) {
+          [self downloadFolder:[item path]];
+        }
+      }
+    } else if ([result isKindOfClass:[KxSMBItem class]]) {
+      KxSMBItem* item = (KxSMBItem *) result;
+      if ([item type] == KxSMBItemTypeFile) {
+        KxSMBItemFile* file = (KxSMBItemFile *) item;
+        [self downloadFile :file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+      } else if ([item type] == KxSMBItemTypeDir) {
+        [self downloadFolder:[item path]];
+      }
+    }
+  }];
+}
+
+- (void) downloadFile :(KxSMBItemFile*) file :(NSString*) path {
+  NSData* data = [file readDataToEndOfFile];
+  NSFileManager* fileManager = [[NSFileManager alloc] init];
+  [fileManager createFileAtPath:path contents:data attributes:nil];
+}
 
 @end
 
@@ -167,6 +204,10 @@
   }]];
   [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
   [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (IBAction) downloadFolder {
+  [self downloadFolder:_path];
 }
 
 @end
