@@ -108,7 +108,7 @@
       if ([result isKindOfClass:[NSError class]]) {
         _navigationBar.topItem.title = ((NSError*) result).localizedDescription;
       } else if ([result isKindOfClass:[NSArray class]]) {
-        _items = [result copy];
+        _items = [result sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"path" ascending:YES]]];
         [_tableView reloadData];
       } else if ([result isKindOfClass:[KxSMBItem class]]) {
         _items = @[result];
@@ -121,6 +121,7 @@
 }
 
 - (void) downloadFolder:(NSString*) path {
+  // TODO: download only comic files
   // Create the folder
   NSString* localFolder = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString* originalPath = [[_path stringByDeletingLastPathComponent] stringByReplacingOccurrencesOfString:@":/" withString:@"://"];
