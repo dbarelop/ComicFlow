@@ -17,6 +17,7 @@
 #import "KxSMBProvider.h"
 #import "MiniZip.h"
 #import "ImageDecompression.h"
+#import "Library.h"
 
 #define DEFAULT_BLOCKSIZE 1024 * 1024
 
@@ -157,6 +158,7 @@
   handler(percentage, downloadedBytes);
   [file close];
   [fileHandle closeFile];
+  [[LibraryUpdater sharedUpdater] update:NO];
 }
 
 

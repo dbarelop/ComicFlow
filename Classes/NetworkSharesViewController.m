@@ -16,6 +16,7 @@
 #import "NetworkSharesViewController.h"
 #import "KxSMBProvider.h"
 #import "NetworkFileViewController.h"
+#import "Library.h"
 
 @implementation NetworkSharesViewController {
   NSArray* _items;
@@ -224,6 +225,7 @@
   // Download the folder
   dispatch_async(dispatch_queue_create("download_queue", NULL), ^{
     [self downloadFolder:_path];
+    [[LibraryUpdater sharedUpdater] update:NO];
     dispatch_async(dispatch_get_main_queue(), ^{
       [alert dismissViewControllerAnimated:YES completion:nil];
     });
