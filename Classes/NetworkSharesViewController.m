@@ -135,7 +135,8 @@
     for (KxSMBItem* item in result) {
       if ([item type] == KxSMBItemTypeFile) {
         KxSMBItemFile* file = (KxSMBItemFile *) item;
-        [self downloadFile:file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+        NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
+        [self downloadFile:file :destination];
       } else if ([item type] == KxSMBItemTypeDir) {
         [self downloadFolder:[item path]];
       }
@@ -144,7 +145,8 @@
     KxSMBItem* item = (KxSMBItem *) result;
     if ([item type] == KxSMBItemTypeFile) {
       KxSMBItemFile* file = (KxSMBItemFile *) item;
-      [self downloadFile :file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+      NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
+      [self downloadFile:file :destination];
     } else if ([item type] == KxSMBItemTypeDir) {
       [self downloadFolder:[item path]];
     }

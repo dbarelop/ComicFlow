@@ -16,8 +16,9 @@
 #import "NetworkFileViewController.h"
 #import "KxSMBProvider.h"
 #import "MiniZip.h"
-#import "UnRAR.h"
 #import "ImageDecompression.h"
+
+#define DEFAULT_BLOCKSIZE 1024 * 1024
 
 @implementation NetworkFileViewController {
   UIBarButtonItem* _downloadButton;
@@ -173,5 +174,44 @@
     [self closeFiles];
   }
 }
+
+@end
+
+@implementation NetworkFileDownloaderController
+
++ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination {
+  [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:nil onlyAtEnd:YES];
+}
+
++ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination finalHandler:(void (^)(float percentage))finalHandler {
+  [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:finalHandler onlyAtEnd:YES];
+}
+
++ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage))handler {
+  [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:handler onlyAtEnd:NO];
+}
+
++ (void) downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage))handler onlyAtEnd:(BOOL)onlyAtEnd {
+  NSFileManager *fileManager = [[NSFileManager alloc] init];
+  // Create destination file
+  [fileManager createFileAtPath:destination contents:nil attributes:nil];
+  NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingToURL:[NSURL fileURLWithPath:destination] error:nil];
+  // Start download
+  long downloadedBytes = 0;
+  float percentage = 0.0;
+  NSData *buf;
+  while (downloadedBytes < file.stat.size) {
+    if (!onlyAtEnd) {
+      handler(percentage);
+    }
+    buf = [file readDataOfLength:blocksize];
+    [fileHandle writeData:buf];
+    percentage += (float) buf.length / (float) file.stat.size;
+  }
+  handler(percentage);
+  [file close];
+  [fileHandle closeFile];
+}
+
 
 @end
