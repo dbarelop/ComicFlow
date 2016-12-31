@@ -27,6 +27,6 @@
 
 @interface NetworkFileDownloaderController
 + (void) downloadFileAtPath:(KxSMBItemFile * _Nonnull)file destination:(NSString * _Nonnull)destination;
-+ (void) downloadFileAtPath:(KxSMBItemFile * _Nonnull)file destination:(NSString * _Nonnull)destination finalHandler:(void (^ _Nullable)(float percentage))finalHandler;
-+ (void) downloadFileAtPath:(KxSMBItemFile * _Nonnull)file destination:(NSString * _Nonnull)destination blocksize:(NSUInteger)blocksize handler:(void (^ _Nullable)(float percentage))handler;
++ (void) downloadFileAtPath:(KxSMBItemFile * _Nonnull)file destination:(NSString * _Nonnull)destination finalHandler:(void (^ _Nullable)(float percentage, long downloadedBytes))finalHandler;
++ (void) downloadFileAtPath:(KxSMBItemFile * _Nonnull)file destination:(NSString * _Nonnull)destination blocksize:(NSUInteger)blocksize handler:(void (^ _Nullable)(float percentage, long downloadedBytes))handler;
 @end

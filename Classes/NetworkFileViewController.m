@@ -22,23 +22,17 @@
 
 @implementation NetworkFileViewController {
   UIBarButtonItem* _downloadButton;
-  NSFileHandle* _fileHandle;
   NSString* _filePath;
-  long _downloadedBytes;
   NSDate* _timestamp;
 }
 - (id) init {
   return self;
 }
 
-- (void) dealloc {
-  [self closeFiles];
-}
-
 - (void) viewDidLoad {
   [super viewDidLoad];
 
-  _downloadLabel.text = @"Waiting...";
+  _downloadLabel.text = @"Download the file to preview it";
   _navigationBar.topItem.title = _smbFile.path.lastPathComponent;
   _downloadProgress.progress = 0;
 }
@@ -53,58 +47,22 @@
   item.rightBarButtonItem = _downloadButton;
 }
 
-- (void) closeFiles {
-  if (_fileHandle) {
-    [_fileHandle closeFile];
-    _fileHandle = nil;
+- (void) updateDownloadStatus :(float)percentage :(long)downloadedBytes {
+  NSTimeInterval time = -[_timestamp timeIntervalSinceNow];
+  CGFloat value;
+  NSString* unit;
+  if (downloadedBytes < 1024) {
+    value = downloadedBytes;
+    unit = @"B";
+  } else if (downloadedBytes < 1024*1024) {
+    value = downloadedBytes / 1024.f;
+    unit = @"KB";
+  } else {
+    value = downloadedBytes / (1024.f*1024.f);
+    unit = @"MB";
   }
-  [_smbFile close];
-}
-
-- (void) updateDownloadStatus: (id) result {
-  if ([result isKindOfClass:[NSError class]]) {
-    NSError* error = result;
-
-    [_downloadButton setTitle:@"Download"];
-    _downloadLabel.text = [NSString stringWithFormat:@"Failed: %@", error.localizedDescription];
-    [self closeFiles];
-  } else if ([result isKindOfClass:[NSData class]]) {
-    NSData* data = result;
-
-    if (data.length == 0) {
-      [_downloadButton setTitle:@"Download"];
-      [self closeFiles];
-    } else {
-      NSTimeInterval time = -[_timestamp timeIntervalSinceNow];
-      _downloadedBytes += data.length;
-      _downloadProgress.progress = (float) _downloadedBytes / (float) _smbFile.stat.size;
-      CGFloat value;
-      NSString* unit;
-      if (_downloadedBytes < 1024) {
-        value = _downloadedBytes;
-        unit = @"B";
-      } else if (_downloadedBytes < 1024*1024) {
-        value = _downloadedBytes / 1024.f;
-        unit = @"KB";
-      } else {
-        value = _downloadedBytes / (1024.f*1024.f);
-        unit = @"MB";
-      }
-      _downloadLabel.text = [NSString stringWithFormat:@"Downloaded %.1f%@ (%.1f%%) %.2f%@/s", value, unit, _downloadProgress.progress * 100.f, value / time, unit];
-
-      if (_fileHandle) {
-        [_fileHandle writeData:data];
-        if (_downloadedBytes == _smbFile.stat.size) {
-          [self closeFiles];
-          [_downloadButton setTitle:@"Done"];
-          [_downloadButton setEnabled:NO];
-          [self displayCover];
-        } else {
-          [self download];
-        }
-      }
-    }
-  }
+  _downloadLabel.text = [NSString stringWithFormat:@"Downloaded %.1f%@ (%.1f%%) at %.2f%@/s", value, unit, percentage * 100.f, value / time, unit];
+  [_downloadProgress setProgress:percentage animated:YES];
 }
 
 - (void) displayCover {
@@ -130,15 +88,6 @@
   }
 }
 
-- (void) download {
-  __weak __typeof(self) weakSelf = self;
-  [_smbFile readDataOfLength:1024*1024 block:^(id result) {
-    NetworkFileViewController* p = weakSelf;
-    if (p) {
-      [p updateDownloadStatus:result];
-    }
-  }];
-}
 @end
 
 @implementation NetworkFileViewController (IBActions)
@@ -147,32 +96,25 @@
 }
 
 - (IBAction) downloadAction {
-  if (!_fileHandle) {
-    NSString* folder = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-    NSString* filename = _smbFile.path.lastPathComponent;
-    _filePath = [folder stringByAppendingPathComponent:filename];
+  NSString* folder = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  NSString* filename = _smbFile.path.lastPathComponent;
+  _filePath = [folder stringByAppendingPathComponent:filename];
 
-    NSFileManager* fileManager = [[NSFileManager alloc] init];
-    if ([fileManager fileExistsAtPath:_filePath]) {
-      [fileManager removeItemAtPath:_filePath error:nil];
-    }
-    [fileManager createFileAtPath:_filePath contents:nil attributes:nil];
-
-    NSError* error;
-    _fileHandle = [NSFileHandle fileHandleForWritingToURL:[NSURL fileURLWithPath:_filePath] error:&error];
-    if (_fileHandle) {
-      [_downloadButton setTitle:@"Cancel"];
-      _downloadedBytes = 0;
-      _downloadProgress.progress = 0;
-      _timestamp = [NSDate date];
-      [self download];
-    } else {
-      _downloadLabel.text = [NSString stringWithFormat:@"Failed: %@", error.localizedDescription];
-    }
-  } else {
-    [_downloadButton setTitle:@"Download"];
-    [self closeFiles];
-  }
+  [_downloadButton setTitle:@"Cancel"];
+  _downloadProgress.progress = 0;
+  _timestamp = [NSDate date];
+  dispatch_async(dispatch_queue_create("file_download_queue", NULL), ^{
+    [NetworkFileDownloaderController downloadFileAtPath:_smbFile destination:_filePath blocksize:1024 * 1024 handler:^(float percentage, long downloadedBytes) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateDownloadStatus:percentage :downloadedBytes];
+      });
+    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [_downloadButton setTitle:@"Done"];
+      [_downloadButton setAction:@selector(back)];
+      [self displayCover];
+    });
+  });
 }
 
 @end
@@ -183,17 +125,20 @@
   [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:nil onlyAtEnd:YES];
 }
 
-+ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination finalHandler:(void (^)(float percentage))finalHandler {
++ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination finalHandler:(void (^)(float percentage, long downloadedBytes))finalHandler {
   [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:finalHandler onlyAtEnd:YES];
 }
 
-+ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage))handler {
++ (void)downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage, long downloadedBytes))handler {
   [NetworkFileDownloaderController downloadFileAtPath:file destination:destination blocksize:DEFAULT_BLOCKSIZE handler:handler onlyAtEnd:NO];
 }
 
-+ (void) downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage))handler onlyAtEnd:(BOOL)onlyAtEnd {
++ (void) downloadFileAtPath:(KxSMBItemFile *)file destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage, long downloadedBytes))handler onlyAtEnd:(BOOL)onlyAtEnd {
   NSFileManager *fileManager = [[NSFileManager alloc] init];
   // Create destination file
+  if ([fileManager fileExistsAtPath:destination]) {
+    [fileManager removeItemAtPath:destination error:nil];
+  }
   [fileManager createFileAtPath:destination contents:nil attributes:nil];
   NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingToURL:[NSURL fileURLWithPath:destination] error:nil];
   // Start download
@@ -202,13 +147,14 @@
   NSData *buf;
   while (downloadedBytes < file.stat.size) {
     if (!onlyAtEnd) {
-      handler(percentage);
+      handler(percentage, downloadedBytes);
     }
     buf = [file readDataOfLength:blocksize];
     [fileHandle writeData:buf];
+    downloadedBytes += buf.length;
     percentage += (float) buf.length / (float) file.stat.size;
   }
-  handler(percentage);
+  handler(percentage, downloadedBytes);
   [file close];
   [fileHandle closeFile];
 }
