@@ -129,29 +129,29 @@
   [[[NSFileManager alloc] init] createDirectoryAtPath:relativePath withIntermediateDirectories:NO attributes:nil error:&error];
   // Download the contents
   KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
-  [provider fetchAtPath:path auth:_smbAuth block:^(id result) {
-    if ([result isKindOfClass:[NSArray class]]) {
-      for (KxSMBItem* item in result) {
-        if ([item type] == KxSMBItemTypeFile) {
-          KxSMBItemFile* file = (KxSMBItemFile *) item;
-          [self downloadFile:file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
-        } else if ([item type] == KxSMBItemTypeDir) {
-          [self downloadFolder:[item path]];
-        }
-      }
-    } else if ([result isKindOfClass:[KxSMBItem class]]) {
-      KxSMBItem* item = (KxSMBItem *) result;
+  id result = [provider fetchAtPath:path auth:_smbAuth];
+  if ([result isKindOfClass:[NSArray class]]) {
+    for (KxSMBItem* item in result) {
       if ([item type] == KxSMBItemTypeFile) {
         KxSMBItemFile* file = (KxSMBItemFile *) item;
-        [self downloadFile :file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+        [self downloadFile:file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
       } else if ([item type] == KxSMBItemTypeDir) {
         [self downloadFolder:[item path]];
       }
     }
-  }];
+  } else if ([result isKindOfClass:[KxSMBItem class]]) {
+    KxSMBItem* item = (KxSMBItem *) result;
+    if ([item type] == KxSMBItemTypeFile) {
+      KxSMBItemFile* file = (KxSMBItemFile *) item;
+      [self downloadFile :file :[relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]]];
+    } else if ([item type] == KxSMBItemTypeDir) {
+      [self downloadFolder:[item path]];
+    }
+  }
 }
 
 - (void) downloadFile :(KxSMBItemFile*) file :(NSString*) path {
+  // TODO: download in chunks to handle big files
   NSData* data = [file readDataToEndOfFile];
   NSFileManager* fileManager = [[NSFileManager alloc] init];
   [fileManager createFileAtPath:path contents:data attributes:nil];
@@ -207,7 +207,24 @@
 }
 
 - (IBAction) downloadFolder {
-  [self downloadFolder:_path];
+  // Build the alert
+  UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Downloading" message:@"\n\n" preferredStyle:UIAlertControllerStyleAlert];
+  // TODO: add two progress bars; one for current file and another one for all files (count before)
+  // TODO: add cancel button
+  UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+  spinner.center = CGPointMake(alert.view.frame.size.width / 2, (CGFloat) (alert.view.frame.size.height - spinner.frame.size.height - 160.0));
+  spinner.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+  spinner.color = [UIColor blackColor];
+  [spinner startAnimating];
+  [alert.view addSubview:spinner];
+  [self presentViewController:alert animated:YES completion:nil];
+  // Download the folder
+  dispatch_async(dispatch_queue_create("download_queue", NULL), ^{
+    [self downloadFolder:_path];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [alert dismissViewControllerAnimated:YES completion:nil];
+    });
+  });
 }
 
 @end
