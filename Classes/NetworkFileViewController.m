@@ -147,7 +147,7 @@
   float percentage = 0.0;
   NSData *buf;
   while (downloadedBytes < file.stat.size) {
-    if (!onlyAtEnd) {
+    if (!onlyAtEnd && handler) {
       handler(percentage, downloadedBytes);
     }
     buf = [file readDataOfLength:blocksize];
@@ -155,7 +155,9 @@
     downloadedBytes += buf.length;
     percentage += (float) buf.length / (float) file.stat.size;
   }
-  handler(percentage, downloadedBytes);
+  if (handler) {
+    handler(percentage, downloadedBytes);
+  }
   [file close];
   [fileHandle closeFile];
   [[LibraryUpdater sharedUpdater] update:NO];

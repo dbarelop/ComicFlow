@@ -137,7 +137,7 @@
       if ([item type] == KxSMBItemTypeFile) {
         KxSMBItemFile* file = (KxSMBItemFile *) item;
         NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
-        [self downloadFile:file :destination];
+        [NetworkFileDownloaderController downloadFileAtPath:file destination:destination];
       } else if ([item type] == KxSMBItemTypeDir) {
         [self downloadFolder:[item path]];
       }
@@ -147,18 +147,11 @@
     if ([item type] == KxSMBItemTypeFile) {
       KxSMBItemFile* file = (KxSMBItemFile *) item;
       NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
-      [self downloadFile:file :destination];
+      [NetworkFileDownloaderController downloadFileAtPath:file destination:destination];
     } else if ([item type] == KxSMBItemTypeDir) {
       [self downloadFolder:[item path]];
     }
   }
-}
-
-- (void) downloadFile :(KxSMBItemFile*) file :(NSString*) path {
-  // TODO: download in chunks to handle big files
-  NSData* data = [file readDataToEndOfFile];
-  NSFileManager* fileManager = [[NSFileManager alloc] init];
-  [fileManager createFileAtPath:path contents:data attributes:nil];
 }
 
 @end
