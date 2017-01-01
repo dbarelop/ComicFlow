@@ -18,6 +18,10 @@
 #import "NetworkFileViewController.h"
 #import "Library.h"
 
+@interface NetworkSharesViewController ()
+@property(readwrite, nonatomic, strong) KxSMBItemTree* currentDir;
+@end
+
 @implementation NetworkSharesViewController {
   NSArray* _items;
 }
@@ -86,6 +90,7 @@
     NetworkSharesViewController* viewController = [[NetworkSharesViewController alloc] init];
     viewController.smbAuth = _smbAuth;
     viewController.path = item.path;
+    viewController.currentDir = (KxSMBItemTree *) item;
     [self presentViewController:viewController animated:NO completion:nil];
   } else if ([item isKindOfClass:[KxSMBItemFile class]]) {
     NetworkFileViewController* viewController = [[NetworkFileViewController alloc] init];
@@ -104,8 +109,7 @@
     _items = nil;
     [_tableView reloadData];
 
-    KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
-    [provider fetchAtPath:path auth:_smbAuth block:^(id result) {
+    KxSMBBlock updateItems = ^(id result) {
       if ([result isKindOfClass:[NSError class]]) {
         _navigationBar.topItem.title = ((NSError*) result).localizedDescription;
       } else if ([result isKindOfClass:[NSArray class]]) {
@@ -115,42 +119,15 @@
         _items = @[result];
         [_tableView reloadData];
       }
-    }];
+    };
+    if (_currentDir) {
+      [_currentDir fetchItems:updateItems];
+    } else {
+      KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
+      [provider fetchAtPath:path auth:_smbAuth block:updateItems];
+    }
   } else {
     [[[_navigationBar.items objectAtIndex:0].rightBarButtonItems objectAtIndex:0] setEnabled:NO];
-  }
-}
-
-- (void) downloadFolder:(NSString*) path {
-  // TODO: download only comic files
-  // Create the folder
-  NSString* localFolder = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  NSString* originalPath = [[_path stringByDeletingLastPathComponent] stringByReplacingOccurrencesOfString:@":/" withString:@"://"];
-  NSString* relativePath = [path stringByReplacingOccurrencesOfString:originalPath withString:localFolder];
-  NSError* error;
-  [[[NSFileManager alloc] init] createDirectoryAtPath:relativePath withIntermediateDirectories:NO attributes:nil error:&error];
-  // Download the contents
-  KxSMBProvider* provider = [KxSMBProvider sharedSmbProvider];
-  id result = [provider fetchAtPath:path auth:_smbAuth];
-  if ([result isKindOfClass:[NSArray class]]) {
-    for (KxSMBItem* item in result) {
-      if ([item type] == KxSMBItemTypeFile) {
-        KxSMBItemFile* file = (KxSMBItemFile *) item;
-        NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
-        [NetworkFileDownloaderController downloadFileAtPath:file destination:destination];
-      } else if ([item type] == KxSMBItemTypeDir) {
-        [self downloadFolder:[item path]];
-      }
-    }
-  } else if ([result isKindOfClass:[KxSMBItem class]]) {
-    KxSMBItem* item = (KxSMBItem *) result;
-    if ([item type] == KxSMBItemTypeFile) {
-      KxSMBItemFile* file = (KxSMBItemFile *) item;
-      NSString* destination = [relativePath stringByAppendingPathComponent:[[item path] lastPathComponent]];
-      [NetworkFileDownloaderController downloadFileAtPath:file destination:destination];
-    } else if ([item type] == KxSMBItemTypeDir) {
-      [self downloadFolder:[item path]];
-    }
   }
 }
 
@@ -217,7 +194,8 @@
   [self presentViewController:alert animated:YES completion:nil];
   // Download the folder
   dispatch_async(dispatch_queue_create("download_queue", NULL), ^{
-    [self downloadFolder:_path];
+    NSString* destination = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    [NetworkFileDownloaderController downloadDirectory:_currentDir destination:destination];
     [[LibraryUpdater sharedUpdater] update:NO];
     dispatch_async(dispatch_get_main_queue(), ^{
       [alert dismissViewControllerAnimated:YES completion:nil];

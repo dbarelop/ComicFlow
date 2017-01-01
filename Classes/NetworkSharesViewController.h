@@ -16,11 +16,13 @@
 #import "NavigationControl.h"
 
 @class KxSMBAuth;
+@class KxSMBItemTree;
 
 @interface NetworkSharesViewController : UIViewController <UINavigationBarDelegate, UITableViewDelegate, UITableViewDataSource>
 @property(nonatomic, retain) IBOutlet UINavigationBar* navigationBar;
 @property(nonatomic, retain) IBOutlet UITableView* tableView;
 @property(readwrite, nonatomic, strong) NSString* path;
+@property(readonly, nonatomic, strong) KxSMBItemTree* currentDir;
 @property(readwrite, nonatomic, strong) KxSMBAuth* smbAuth;
 - (id) init:(UIWindow*)window;
 @end

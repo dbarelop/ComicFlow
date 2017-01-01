@@ -163,5 +163,36 @@
   [[LibraryUpdater sharedUpdater] update:NO];
 }
 
++ (void) downloadDirectory:(KxSMBItemTree * _Nonnull)directory destination:(NSString * _Nonnull)destination {
+  [NetworkFileDownloaderController downloadDirectory:directory destination:destination blocksize:DEFAULT_BLOCKSIZE handler:nil onlyAtEnd:YES];
+}
+
++ (void) downloadDirectory:(KxSMBItemTree * _Nonnull)directory destination:(NSString * _Nonnull)destination handler:(void (^ _Nullable)(float percentage, long downloadedBytes))handler {
+  [NetworkFileDownloaderController downloadDirectory:directory destination:destination blocksize:DEFAULT_BLOCKSIZE handler:handler onlyAtEnd:YES];
+}
+
++ (void) downloadDirectory:(KxSMBItemTree * _Nonnull)directory destination:(NSString * _Nonnull)destination blocksize:(NSUInteger)blocksize handler:(void (^ _Nullable)(float percentage, long downloadedBytes))handler {
+  [NetworkFileDownloaderController downloadDirectory:directory destination:destination blocksize:blocksize handler:handler onlyAtEnd:NO];
+}
+
++ (void) downloadDirectory:(KxSMBItemTree *)directory destination:(NSString *)destination blocksize:(NSUInteger)blocksize handler:(void (^)(float percentage, long downloadedBytes))handler onlyAtEnd:(BOOL)onlyAtEnd {
+  // Create the folder
+  NSString* parentPath = [[[directory path] stringByDeletingLastPathComponent] stringByReplacingOccurrencesOfString:@":/" withString:@"://"];
+  NSString* currentDestination = [[directory path] stringByReplacingOccurrencesOfString:parentPath withString:destination];
+  [[[NSFileManager alloc] init] createDirectoryAtPath:currentDestination withIntermediateDirectories:NO attributes:nil error:nil];
+  // Download the contents
+  id result = [directory fetchItems];
+  result = [result isKindOfClass:[KxSMBItem class]] ? @[result] : result;
+  for (KxSMBItem *item in result) {
+    NSString *downloadDestination = [destination stringByAppendingPathComponent:[[item path] lastPathComponent]];
+    if ([item type] == KxSMBItemTypeFile) {
+      KxSMBItemFile *file = (KxSMBItemFile *) item;
+      [NetworkFileDownloaderController downloadFileAtPath:file destination:downloadDestination blocksize:blocksize handler:handler onlyAtEnd:onlyAtEnd];
+    } else if ([item type] == KxSMBItemTypeDir) {
+      KxSMBItemTree *nextDirectory = (KxSMBItemTree *) item;
+      [NetworkFileDownloaderController downloadDirectory:nextDirectory destination:downloadDestination blocksize:blocksize handler:handler onlyAtEnd:onlyAtEnd];
+    }
+  }
+}
 
 @end
