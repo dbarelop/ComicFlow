@@ -183,19 +183,24 @@
 - (IBAction) downloadFolder {
   // Build the alert
   UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Downloading" message:@"\n\n" preferredStyle:UIAlertControllerStyleAlert];
-  // TODO: add two progress bars; one for current file and another one for all files (count before)
   // TODO: add cancel button
-  UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-  spinner.center = CGPointMake(alert.view.frame.size.width / 2, (CGFloat) (alert.view.frame.size.height - spinner.frame.size.height - 160.0));
-  spinner.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
-  spinner.color = [UIColor blackColor];
-  [spinner startAnimating];
-  [alert.view addSubview:spinner];
-  [self presentViewController:alert animated:YES completion:nil];
+  UIProgressView* progressView = [UIProgressView alloc];
+  [self presentViewController:alert animated:YES completion:^{
+    CGFloat margin = 8.0;
+    CGRect frame = CGRectMake(margin, alert.view.frame.size.height / 2, alert.view.frame.size.width - margin * 2, 2.0);
+    [progressView initWithFrame:frame];
+    progressView.progress = 0.0;
+    progressView.tintColor = [UIColor blueColor];
+    [alert.view addSubview:progressView];
+  }];
   // Download the folder
   dispatch_async(dispatch_queue_create("download_queue", NULL), ^{
     NSString* destination = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-    [NetworkFileDownloaderController downloadDirectory:_currentDir destination:destination];
+    [NetworkFileDownloaderController downloadDirectory:_currentDir destination:destination blocksize:1024*1024 handler:^(float percentage, long downloadedBytes){
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [progressView setProgress:percentage animated:percentage > progressView.progress];
+      });
+    }];
     [[LibraryUpdater sharedUpdater] update:NO];
     dispatch_async(dispatch_get_main_queue(), ^{
       [alert dismissViewControllerAnimated:YES completion:nil];
